@@ -1,18 +1,18 @@
 import Grid from "@material-ui/core/Grid"
 import React from "react"
+import { Layout } from "./layout"
 import { MyFighterSelector } from "./my-fighter-selector"
 import { ResultSwitch } from "./result-switch"
 import { RivalFighterSelector } from "./rival-fighter-selector"
 
-const containerStyles: React.CSSProperties = {
-  justifyContent: "center",
-  paddingTop: 8 * 4,
-}
-
 export const App: React.FunctionComponent<{}> = () => (
-  <Grid container={true} style={containerStyles}>
-    <MyFighterSelector />
-    <RivalFighterSelector />
+  <Layout>
+    <Grid item={true} xs={12} sm={6}>
+      <MyFighterSelector />
+    </Grid>
+    <Grid item={true} xs={12} sm={6}>
+      <RivalFighterSelector />
+    </Grid>
     <ResultSwitch />
-  </Grid>
+  </Layout>
 )
