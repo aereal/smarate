@@ -4,6 +4,7 @@ import { Layout } from "./layout"
 import { MyFighterSelector } from "./my-fighter-selector"
 import { ResultSwitch } from "./result-switch"
 import { RivalFighterSelector } from "./rival-fighter-selector"
+import { SubmitButton } from "./submit-button"
 
 export const App: React.FunctionComponent<{}> = () => (
   <Layout>
@@ -14,5 +15,6 @@ export const App: React.FunctionComponent<{}> = () => (
       <RivalFighterSelector />
     </Grid>
     <ResultSwitch />
+    <SubmitButton />
   </Layout>
 )
