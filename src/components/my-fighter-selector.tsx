@@ -1,10 +1,9 @@
-import Typography from "@material-ui/core/Typography"
 import React from "react"
-import { FighterSelector } from "./fighter-selector"
+import { FighterSelectUnit } from "./fighter-select-unit"
 
-export const MyFighterSelector: React.FunctionComponent<{}> = () => (
-  <>
-    <Typography variant="headline">あなたのファイター</Typography>
-    <FighterSelector defaultSelectedFighterID={62} />
-  </>
+export const MyFighterSelector = () => (
+  <FighterSelectUnit
+    label="あなたのファイター"
+    fighterSelectorProps={{ defaultSelectedFighterID: 62 }}
+  />
 )

@@ -3,7 +3,7 @@ import Select from "@material-ui/core/Select"
 import React, { useState } from "react"
 import { Fighter, fighters } from "../models/fighter"
 
-interface Props {
+export interface Props {
   candidates?: ReadonlyArray<Fighter>
   defaultSelectedFighterID?: number
 }
