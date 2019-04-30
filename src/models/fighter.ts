@@ -83,4 +83,5 @@ export const fighters: ReadonlyArray<Fighter> = [
   { id: 73, name: { ja: "ケン" } },
   { id: 74, name: { ja: "ガオガエン" } },
   { id: 75, name: { ja: "パックンフラワー" } },
+  { id: 76, name: { ja: "ジョーカー" } },
 ]
