@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
+import { CurrentUserIdTokenContext } from "../auth"
 
 type FetchState = "undetermined" | "successful" | "error"
 
@@ -12,7 +13,8 @@ interface ResponseData {
 
 const endpoint = process.env.REACT_APP_STORE_API_ENDPOINT!
 
-export const useStoreAPI = (credentials: Credentials) => {
+export const useStoreAPI = (credentials?: Credentials) => {
+  const { idToken } = useContext(CurrentUserIdTokenContext)
   const [fetchState, setFetchState] = useState<FetchState>("undetermined")
   const [responseData, setResponseData] = useState<ResponseData>()
   const [queue, enqueue] = useState(0)
@@ -24,10 +26,14 @@ export const useStoreAPI = (credentials: Credentials) => {
         return
       }
 
+      if (idToken === undefined) {
+        return
+      }
+
       try {
         const res = await window.fetch(endpoint, {
           headers: {
-            Authorization: `token ${credentials.token}`,
+            Authorization: `token ${idToken}`,
           },
         })
         const body = await res.text()

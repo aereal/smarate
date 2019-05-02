@@ -46,6 +46,8 @@ export const AuthProvider: FunctionComponent = ({ children }) => {
   )
 }
 
+export const useAuth = () => useContext(AuthContext)
+
 interface Props {
   children: (user: User) => ReactElement
 }
@@ -60,7 +62,7 @@ const uiConfig: firebaseui.auth.Config = {
 
 export const AuthRequired: FunctionComponent<Props> = ({ children }) => {
   const { auth } = useFirebaseAuth()
-  const { currentUser, loaded } = useContext(AuthContext)
+  const { currentUser, loaded } = useAuth()
   if (!loaded) {
     return null
   }
