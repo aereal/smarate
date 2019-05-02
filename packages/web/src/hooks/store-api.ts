@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react"
-import { CurrentUserIdTokenContext } from "../auth"
+import { CurrentUserIdTokenContext } from "../contexts/current-user-id-token"
 
 type FetchState = "undetermined" | "successful" | "error"
 

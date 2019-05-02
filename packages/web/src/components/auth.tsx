@@ -1,52 +1,8 @@
-import React, {
-  createContext,
-  FunctionComponent,
-  ReactElement,
-  useContext,
-  useEffect,
-  useState,
-} from "react"
+import React, { FunctionComponent, ReactElement } from "react"
 import { StyledFirebaseAuth } from "react-firebaseui"
 import { supportedAuthProviders, useFirebaseAuth } from "../auth"
+import { useAuth } from "../contexts/authentication"
 import { User } from "../models/user"
-
-interface AuthContextValue {
-  currentUser: User | undefined
-  loaded: boolean
-}
-
-const AuthContext = createContext<AuthContextValue>({
-  currentUser: undefined,
-  loaded: false,
-})
-AuthContext.displayName = "AuthContext"
-
-export const AuthProvider: FunctionComponent = ({ children }) => {
-  const { auth } = useFirebaseAuth()
-  const [currentUser, setCurrentUser] = useState<User>()
-  const [loaded, setLoaded] = useState(false)
-
-  useEffect(() => {
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        setCurrentUser(user)
-        setLoaded(true)
-      } else {
-        setCurrentUser(undefined)
-        setLoaded(true)
-      }
-      return
-    })
-  }, [])
-
-  return (
-    <AuthContext.Provider value={{ currentUser, loaded }}>
-      {children}
-    </AuthContext.Provider>
-  )
-}
-
-export const useAuth = () => useContext(AuthContext)
 
 interface Props {
   children: (user: User) => ReactElement
