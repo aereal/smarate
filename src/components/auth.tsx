@@ -1,4 +1,3 @@
-import firebase from "firebase"
 import React, {
   createContext,
   FunctionComponent,
@@ -8,6 +7,7 @@ import React, {
   useState,
 } from "react"
 import { StyledFirebaseAuth } from "react-firebaseui"
+import { supportedAuthProviders, useFirebaseAuth } from "../auth"
 import { User } from "../models/user"
 
 interface AuthContextValue {
@@ -22,11 +22,12 @@ const AuthContext = createContext<AuthContextValue>({
 AuthContext.displayName = "AuthContext"
 
 export const AuthProvider: FunctionComponent = ({ children }) => {
+  const { auth } = useFirebaseAuth()
   const [currentUser, setCurrentUser] = useState<User>()
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    firebase.auth().onAuthStateChanged(user => {
+    auth.onAuthStateChanged(user => {
       if (user) {
         setCurrentUser({ uid: user.uid })
         setLoaded(true)
@@ -54,16 +55,17 @@ const uiConfig: firebaseui.auth.Config = {
     signInSuccessWithAuthResult: () => false,
   },
   signInFlow: "popup",
-  signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
+  signInOptions: supportedAuthProviders,
 }
 
 export const AuthRequired: FunctionComponent<Props> = ({ children }) => {
+  const { auth } = useFirebaseAuth()
   const { currentUser, loaded } = useContext(AuthContext)
   if (!loaded) {
     return null
   }
   return currentUser === undefined ? (
-    <StyledFirebaseAuth firebaseAuth={firebase.auth()} uiConfig={uiConfig} />
+    <StyledFirebaseAuth firebaseAuth={auth} uiConfig={uiConfig} />
   ) : (
     children(currentUser)
   )
