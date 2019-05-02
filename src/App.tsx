@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from "react"
 import { Route } from "type-route"
+import { AuthProvider } from "./components/auth"
 import { RootPage } from "./pages/root"
 import { SubmitResultPage } from "./pages/submit-result"
 import { getCurrentRoute, listen, routes } from "./routes"
@@ -28,5 +29,9 @@ export const App: FunctionComponent<{}> = () => {
     return () => listener.remove()
   }, [])
 
-  return <Page route={route} />
+  return (
+    <AuthProvider>
+      <Page route={route} />
+    </AuthProvider>
+  )
 }
