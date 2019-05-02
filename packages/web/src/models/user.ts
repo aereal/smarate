@@ -1,3 +1,3 @@
-export interface User {
-  uid: string
-}
+import { User as FirebaseUser } from "firebase"
+
+export type User = FirebaseUser

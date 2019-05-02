@@ -29,7 +29,7 @@ export const AuthProvider: FunctionComponent = ({ children }) => {
   useEffect(() => {
     auth.onAuthStateChanged(user => {
       if (user) {
-        setCurrentUser({ uid: user.uid })
+        setCurrentUser(user)
         setLoaded(true)
       } else {
         setCurrentUser(undefined)
