@@ -72,5 +72,10 @@ exp.get("/", (req, res) => {
   res.send(`authenticated; uid = ${authenReq.authenticatedUserInfo.uid}`)
   return
 })
+exp.post("/my", (req, res) => {
+  const params = req.body as { defaultFighterID?: number }
+  const { defaultFighterID } = params
+  res.json({ ok: true, result: { defaultFighterID } })
+})
 
-export const echo = region("asia-northeast1").https.onRequest(exp)
+export const api = region("asia-northeast1").https.onRequest(exp)

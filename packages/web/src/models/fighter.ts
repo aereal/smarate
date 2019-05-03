@@ -85,3 +85,10 @@ export const fighters: ReadonlyArray<Fighter> = [
   { id: 75, name: { ja: "パックンフラワー" } },
   { id: 76, name: { ja: "ジョーカー" } },
 ]
+
+const fightersByID = fighters.reduce<Record<number, Fighter>>((a, f) => {
+  return { ...a, [f.id]: f }
+}, {})
+
+export const findFighterByID = (id: number): Fighter | undefined =>
+  fightersByID[id]
