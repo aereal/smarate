@@ -86,6 +86,7 @@ const createAPIEffect = <I, O>(url: string, method: string) => {
 
         try {
           setFetchState("started")
+          setError(undefined)
           const res = await window.fetch(url, {
             body: JSON.stringify(request),
             headers: {
