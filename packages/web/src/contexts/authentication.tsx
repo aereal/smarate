@@ -1,13 +1,11 @@
 import React, {
   createContext,
   FunctionComponent,
-  ReactElement,
   useContext,
   useEffect,
   useState,
 } from "react"
-import { StyledFirebaseAuth } from "react-firebaseui"
-import { supportedAuthProviders, useFirebaseAuth } from "../auth"
+import { useFirebaseAuth } from "../auth"
 import { User } from "../models/user"
 
 interface AuthContextValue {
@@ -29,7 +27,7 @@ export const AuthProvider: FunctionComponent = ({ children }) => {
   useEffect(() => {
     auth.onAuthStateChanged(user => {
       if (user) {
-        setCurrentUser({ uid: user.uid })
+        setCurrentUser(user)
         setLoaded(true)
       } else {
         setCurrentUser(undefined)
@@ -46,27 +44,4 @@ export const AuthProvider: FunctionComponent = ({ children }) => {
   )
 }
 
-interface Props {
-  children: (user: User) => ReactElement
-}
-
-const uiConfig: firebaseui.auth.Config = {
-  callbacks: {
-    signInSuccessWithAuthResult: () => false,
-  },
-  signInFlow: "popup",
-  signInOptions: supportedAuthProviders,
-}
-
-export const AuthRequired: FunctionComponent<Props> = ({ children }) => {
-  const { auth } = useFirebaseAuth()
-  const { currentUser, loaded } = useContext(AuthContext)
-  if (!loaded) {
-    return null
-  }
-  return currentUser === undefined ? (
-    <StyledFirebaseAuth firebaseAuth={auth} uiConfig={uiConfig} />
-  ) : (
-    children(currentUser)
-  )
-}
+export const useAuth = () => useContext(AuthContext)

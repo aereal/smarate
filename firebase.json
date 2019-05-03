@@ -17,10 +17,20 @@
         "source": "/service-worker.js",
         "headers": [
           {
-            "key": "Cache-Control", "value": "no-cache"
+            "key": "Cache-Control",
+            "value": "no-cache"
           }
         ]
       }
+    ],
+    "predeploy": [
+      "yarn workspace web build"
+    ]
+  },
+  "functions": {
+    "source": "packages/functions",
+    "predeploy": [
+      "yarn workspace functions build"
     ]
   }
 }

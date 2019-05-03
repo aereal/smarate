@@ -1,7 +1,8 @@
 import React, { FunctionComponent, useEffect, useState } from "react"
 import { Route } from "type-route"
 import { FirebaseAuthProvider } from "./auth"
-import { AuthProvider } from "./components/auth"
+import { AuthProvider } from "./contexts/authentication"
+import { CurrentUserIdTokenProvider } from "./contexts/current-user-id-token"
 import { RootPage } from "./pages/root"
 import { SubmitResultPage } from "./pages/submit-result"
 import { getCurrentRoute, listen, routes } from "./routes"
@@ -33,7 +34,9 @@ export const App: FunctionComponent<{}> = () => {
   return (
     <FirebaseAuthProvider>
       <AuthProvider>
-        <Page route={route} />
+        <CurrentUserIdTokenProvider>
+          <Page route={route} />
+        </CurrentUserIdTokenProvider>
       </AuthProvider>
     </FirebaseAuthProvider>
   )
