@@ -88,7 +88,7 @@ const createAPIEffect = <I, O>(url: string, method: string) => {
           setFetchState("started")
           setError(undefined)
           const res = await window.fetch(url, {
-            body: JSON.stringify(request),
+            body: request === undefined ? undefined : JSON.stringify(request),
             headers: {
               ["content-type"]: "application/json",
               authorization: `token ${idToken}`,
