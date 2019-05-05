@@ -1,14 +1,25 @@
 import Grid from "@material-ui/core/Grid"
-import React, { FunctionComponent } from "react"
+import React, { FunctionComponent, useEffect } from "react"
 import { FighterSelectUnit } from "../components/fighter-select-unit"
 import { Layout } from "../components/layout"
 import { useAuth } from "../contexts/authentication"
-import { useMyConfigAPI } from "../hooks/store-api"
+import { useGetMyConfigAPI, useUpdateMyConfigAPI } from "../hooks/store-api"
 import { routes } from "../routes"
 
 export const MyPage: FunctionComponent = () => {
   const { currentUser, loaded } = useAuth()
-  const { doFetch, error, fetchState, response } = useMyConfigAPI()
+  const {
+    doFetch: doUpdateMyConfig,
+    response: updateResponse,
+  } = useUpdateMyConfigAPI()
+  const {
+    doFetch: doGetMyConfig,
+    response: getMyConfigResponse,
+  } = useGetMyConfigAPI()
+
+  useEffect(() => {
+    doGetMyConfig(undefined)
+  }, [])
 
   if (!loaded) {
     return null
@@ -19,6 +30,10 @@ export const MyPage: FunctionComponent = () => {
     return null
   }
 
+  const defaultSelectedFighterID =
+    getMyConfigResponse &&
+    (getMyConfigResponse as { defaultFighterID: number }).defaultFighterID
+
   return (
     <Layout>
       <Grid item={true} xs={12} sm={6}>
@@ -26,19 +41,21 @@ export const MyPage: FunctionComponent = () => {
           <FighterSelectUnit
             label="良く使うファイター"
             fighterSelectorProps={{
+              defaultSelectedFighterID,
               onChange: fighterID => {
                 if (fighterID === undefined) {
                   return
                 }
-                doFetch({ defaultFighterID: fighterID })
+                doUpdateMyConfig({ defaultFighterID: fighterID })
               },
             }}
           />
         </Grid>
-        {fetchState === "started" ? "saving ..." : null}
-        {error !== undefined ? <pre>error: {JSON.stringify(error)}</pre> : null}
-        {response !== undefined ? (
-          <pre>response: {JSON.stringify(response)}</pre>
+        {updateResponse !== undefined ? (
+          <pre>response: {JSON.stringify(updateResponse)}</pre>
+        ) : null}
+        {getMyConfigResponse !== undefined ? (
+          <pre>response: {JSON.stringify(getMyConfigResponse)}</pre>
         ) : null}
       </Grid>
     </Layout>

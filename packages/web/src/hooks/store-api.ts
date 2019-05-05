@@ -113,15 +113,20 @@ const createAPIEffect = <I, O>(url: string, method: string) => {
   }
 }
 
-export const useMyConfigAPI = createAPIEffect<
-  MyConfigAPIRequest,
-  MyConfigAPIResponse
+export const useUpdateMyConfigAPI = createAPIEffect<
+  UpdateMyConfigAPIRequest,
+  UpdateMyConfigAPIResponse
 >(`${endpoint}/my`, "POST")
 
-interface MyConfigAPIRequest {
+interface UpdateMyConfigAPIRequest {
   defaultFighterID: number | undefined
 }
 
-interface MyConfigAPIResponse {
+interface UpdateMyConfigAPIResponse {
   ok: boolean
 }
+
+export const useGetMyConfigAPI = createAPIEffect<
+  undefined,
+  { defaultFighterID: number }
+>(`${endpoint}/my`, "GET")
