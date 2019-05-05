@@ -101,12 +101,13 @@ const createAPIEffect = <I, O>(url: string, method: string) => {
           setError(e)
         }
         setFetchState("completed")
+        enqueue(0)
       }
       sendRequest()
     }, [queue, request, idToken])
 
     const doFetch = (r: I) => {
-      enqueue(prev => prev + 1)
+      enqueue(1)
       setRequest(r)
     }
 
