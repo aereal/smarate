@@ -62,12 +62,9 @@ interface ErrorResponse {
 export const isError = (res: object): res is ErrorResponse =>
   "errors" in res && Array.isArray((res as { errors: any }).errors)
 
-type FState = "uninitialized" | "started" | "completed"
-
 const createAPIEffect = <I, O>(url: string, method: string) => {
   return () => {
     const { idToken } = useContext(CurrentUserIdTokenContext)
-    const [fetchState, setFetchState] = useState<FState>("uninitialized")
     const [error, setError] = useState<Error>()
     const [response, setResponse] = useState<O | ErrorResponse>()
     const [request, setRequest] = useState<I>()
@@ -84,7 +81,6 @@ const createAPIEffect = <I, O>(url: string, method: string) => {
         }
 
         try {
-          setFetchState("started")
           setError(undefined)
           const res = await window.fetch(url, {
             body: request === undefined ? undefined : JSON.stringify(request),
@@ -99,7 +95,6 @@ const createAPIEffect = <I, O>(url: string, method: string) => {
         } catch (e) {
           setError(e)
         }
-        setFetchState("completed")
         initialize(false)
       }
       sendRequest()
@@ -113,7 +108,6 @@ const createAPIEffect = <I, O>(url: string, method: string) => {
     return {
       doFetch,
       error,
-      fetchState,
       response,
     }
   }
