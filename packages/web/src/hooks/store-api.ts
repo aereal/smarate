@@ -31,7 +31,7 @@ export const useStoreAPI = (credentials?: Credentials) => {
       }
 
       try {
-        const res = await window.fetch(endpoint, {
+        const res = await window.fetch(endpoint + "/", {
           headers: {
             Authorization: `token ${idToken}`,
           },
@@ -44,7 +44,7 @@ export const useStoreAPI = (credentials?: Credentials) => {
     }
 
     sendRequest()
-  }, [queue])
+  }, [idToken, queue])
 
   const doFetch = (): void => enqueue(prev => prev + 1)
 
@@ -54,3 +54,79 @@ export const useStoreAPI = (credentials?: Credentials) => {
     responseData,
   }
 }
+
+interface ErrorResponse {
+  errors: ReadonlyArray<{ message: string; extra?: any }>
+}
+
+export const isError = (res: object): res is ErrorResponse =>
+  "errors" in res && Array.isArray((res as { errors: any }).errors)
+
+const createAPIEffect = <I, O>(url: string, method: string) => {
+  return () => {
+    const { idToken } = useContext(CurrentUserIdTokenContext)
+    const [error, setError] = useState<Error>()
+    const [response, setResponse] = useState<O | ErrorResponse>()
+    const [request, setRequest] = useState<I>()
+    const [initialized, initialize] = useState(false)
+
+    useEffect(() => {
+      const sendRequest = async () => {
+        if (!initialized) {
+          return
+        }
+
+        if (idToken === undefined) {
+          return
+        }
+
+        try {
+          setError(undefined)
+          const res = await window.fetch(url, {
+            body: request === undefined ? undefined : JSON.stringify(request),
+            headers: {
+              ["content-type"]: "application/json",
+              authorization: `token ${idToken}`,
+            },
+            method,
+          })
+          const resBody = await res.json()
+          setResponse(resBody)
+        } catch (e) {
+          setError(e)
+        }
+        initialize(false)
+      }
+      sendRequest()
+    }, [initialized, request, idToken])
+
+    const doFetch = (r: I) => {
+      initialize(true)
+      setRequest(r)
+    }
+
+    return {
+      doFetch,
+      error,
+      response,
+    }
+  }
+}
+
+export const useUpdateMyConfigAPI = createAPIEffect<
+  UpdateMyConfigAPIRequest,
+  UpdateMyConfigAPIResponse
+>(`${endpoint}/my`, "POST")
+
+interface UpdateMyConfigAPIRequest {
+  defaultFighterID: number | undefined
+}
+
+interface UpdateMyConfigAPIResponse {
+  ok: boolean
+}
+
+export const useGetMyConfigAPI = createAPIEffect<
+  undefined,
+  { defaultFighterID: number }
+>(`${endpoint}/my`, "GET")

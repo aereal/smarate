@@ -3,13 +3,14 @@
 import { RequestHandler } from "express"
 import * as express from "express"
 import admin from "firebase-admin"
-import { region } from "firebase-functions"
+import { config, region } from "firebase-functions"
 
 interface AuthenticatedRequest extends express.Request {
   authenticatedUserInfo: admin.auth.DecodedIdToken
 }
 
-admin.initializeApp()
+admin.initializeApp(config().firebase)
+const db = admin.firestore()
 
 const cors: RequestHandler = (req, res, next) => {
   console.log(`---> start cors mw`)
@@ -72,5 +73,38 @@ exp.get("/", (req, res) => {
   res.send(`authenticated; uid = ${authenReq.authenticatedUserInfo.uid}`)
   return
 })
+exp.get("/my", async (req, res, next) => {
+  const authenReq = (req as never) as AuthenticatedRequest
+  const ref = db
+    .collection("user_preferences")
+    .doc(authenReq.authenticatedUserInfo.uid)
+  try {
+    const got = await ref.get()
+    res.json(got.data())
+  } catch (e) {
+    console.error(`Failed to get user_preferences: ${e}`)
+    res.status(500)
+    res.json({ errors: [{ message: e.message }] })
+  }
+})
+exp.post("/my", async (req, res, next) => {
+  const authenReq = (req as never) as AuthenticatedRequest
+  const params = req.body as { defaultFighterID?: number }
+  const { defaultFighterID } = params
+  const ref = db
+    .collection("user_preferences")
+    .doc(authenReq.authenticatedUserInfo.uid)
+  try {
+    await ref.set({
+      defaultFighterID,
+    })
+    res.json({ ok: true, result: { defaultFighterID } })
+  } catch (e) {
+    console.error(`Failed to write user_preferences: ${e}`)
+    res.status(400)
+    res.json({ errors: [{ message: e.message }] })
+  }
+  next()
+})
 
-export const echo = region("asia-northeast1").https.onRequest(exp)
+export const api = region("asia-northeast1").https.onRequest(exp)

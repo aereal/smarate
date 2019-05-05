@@ -17,6 +17,7 @@ export const RootPage: FunctionComponent<{}> = () => {
         ) : (
           <>
             <Button {...routes.submitResult.link()}>試合結果を記録する</Button>
+            <Button {...routes.my.link()}>マイページ</Button>
             <p>Hi, {currentUser.uid}</p>
             <SignOut />
           </>
