@@ -71,12 +71,11 @@ const createAPIEffect = <I, O>(url: string, method: string) => {
     const [error, setError] = useState<Error>()
     const [response, setResponse] = useState<O | ErrorResponse>()
     const [request, setRequest] = useState<I>()
-    const [queue, enqueue] = useState(0)
+    const [initialized, initialize] = useState(false)
 
     useEffect(() => {
       const sendRequest = async () => {
-        // do not send request on componentDidMount
-        if (queue < 1) {
+        if (!initialized) {
           return
         }
 
@@ -101,13 +100,13 @@ const createAPIEffect = <I, O>(url: string, method: string) => {
           setError(e)
         }
         setFetchState("completed")
-        enqueue(0)
+        initialize(false)
       }
       sendRequest()
-    }, [queue, request, idToken])
+    }, [initialized, request, idToken])
 
     const doFetch = (r: I) => {
-      enqueue(1)
+      initialize(true)
       setRequest(r)
     }
 
