@@ -1,6 +1,6 @@
 import MenuItem from "@material-ui/core/MenuItem"
 import Select from "@material-ui/core/Select"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Fighter, fighters } from "../models/fighter"
 
 export interface Props {
@@ -20,6 +20,11 @@ export const FighterSelector: React.FunctionComponent<Props> = ({
   const candidateFighters = candidates || fighters
   const isSelected = (fighterID: number): boolean =>
     selectedFighterID === undefined ? false : selectedFighterID === fighterID
+
+  useEffect(() => updateFighter(defaultSelectedFighterID), [
+    defaultSelectedFighterID,
+  ])
+
   return (
     <>
       <Select
