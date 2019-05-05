@@ -73,6 +73,20 @@ exp.get("/", (req, res) => {
   res.send(`authenticated; uid = ${authenReq.authenticatedUserInfo.uid}`)
   return
 })
+exp.get("/my", async (req, res, next) => {
+  const authenReq = (req as never) as AuthenticatedRequest
+  const ref = db
+    .collection("user_preferences")
+    .doc(authenReq.authenticatedUserInfo.uid)
+  try {
+    const got = await ref.get()
+    res.json(got.data())
+  } catch (e) {
+    console.error(`Failed to get user_preferences: ${e}`)
+    res.status(500)
+    res.json({ errors: [{ message: e.message }] })
+  }
+})
 exp.post("/my", async (req, res, next) => {
   const authenReq = (req as never) as AuthenticatedRequest
   const params = req.body as { defaultFighterID?: number }
