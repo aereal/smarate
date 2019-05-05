@@ -44,7 +44,7 @@ export const useStoreAPI = (credentials?: Credentials) => {
     }
 
     sendRequest()
-  }, [queue])
+  }, [idToken, queue])
 
   const doFetch = (): void => enqueue(prev => prev + 1)
 
@@ -103,7 +103,7 @@ const createAPIEffect = <I, O>(url: string, method: string) => {
         setFetchState("completed")
       }
       sendRequest()
-    }, [queue, request])
+    }, [queue, request, idToken])
 
     const doFetch = (r: I) => {
       enqueue(prev => prev + 1)

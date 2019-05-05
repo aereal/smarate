@@ -18,7 +18,7 @@ export const CurrentUserIdTokenProvider: FunctionComponent = ({ children }) => {
       setIdToken(got)
     }
     asyncGet()
-  })
+  }, [currentUser])
 
   return (
     <CurrentUserIdTokenContext.Provider value={{ idToken }}>
