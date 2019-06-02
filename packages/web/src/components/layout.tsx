@@ -19,13 +19,13 @@ export const Layout = withStyles(styles)<
     <CssBaseline />
     <AppBar position="static" color="primary">
       <Toolbar>
-        <Typography variant="title" color="inherit">
+        <Typography variant="h6" color="inherit">
           Smarate
         </Typography>
       </Toolbar>
     </AppBar>
     <div className={classes.root}>
-      <Grid container={true} spacing={16}>
+      <Grid container={true} spacing={10}>
         {children}
       </Grid>
     </div>

@@ -11,7 +11,7 @@ const styles = (theme: Theme) =>
   createStyles({
     paper: {
       ...theme.mixins.gutters,
-      padding: theme.spacing.unit * 2,
+      padding: theme.spacing(2),
     },
   })
 
@@ -24,7 +24,7 @@ export const FighterSelectUnit = withStyles(styles)<
   FunctionComponent<Props & WithStyles<keyof ReturnType<typeof styles>>>
 >(({ classes, label, fighterSelectorProps }) => (
   <Paper className={classes.paper}>
-    <Typography variant="headline">{label}</Typography>
+    <Typography variant="subtitle1">{label}</Typography>
     <FighterSelector {...fighterSelectorProps} />
   </Paper>
 ))

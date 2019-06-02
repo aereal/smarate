@@ -26,13 +26,7 @@ const Page: FunctionComponent<{ route: Route<typeof routes> }> = ({
 export const App: FunctionComponent<{}> = () => {
   const [route, setRoute] = useState(getCurrentRoute())
 
-  useEffect(() => {
-    const listener = listen(nextRoute => {
-      setRoute(nextRoute)
-    })
-
-    return () => listener.remove()
-  }, [])
+  useEffect(() => listen(setRoute), [])
 
   return (
     <FirebaseAuthProvider>
