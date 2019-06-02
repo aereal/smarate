@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "build": "tsc",
+    "watch": "tsc -w",
     "serve": "yarn build && firebase serve --only functions",
     "shell": "yarn build && firebase functions:shell",
     "start": "yarn shell",
