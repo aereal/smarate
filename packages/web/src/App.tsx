@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from "react"
 import { Route } from "type-route"
+import { AuthenApolloProvider } from "./contexts/authen-apollo"
 import { DefaultCurrentUserProvider } from "./contexts/current-user"
 import { CurrentUserIdTokenProvider } from "./contexts/current-user-id-token"
 import { MyPage } from "./pages/my"
@@ -30,7 +31,9 @@ export const App: FunctionComponent<{}> = () => {
   return (
     <DefaultCurrentUserProvider>
       <CurrentUserIdTokenProvider>
-        <Page route={route} />
+        <AuthenApolloProvider>
+          <Page route={route} />
+        </AuthenApolloProvider>
       </CurrentUserIdTokenProvider>
     </DefaultCurrentUserProvider>
   )
