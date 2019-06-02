@@ -39,6 +39,7 @@ const withAuthenticationContext: ContextFunction<
 
 const apollo = new ApolloServer({
   context: withAuthenticationContext,
+  introspection: true,
   playground: true,
   resolvers: {
     Query: {
