@@ -5,7 +5,7 @@ import { isSuccessfullySignedIn, useCurrentUser } from "./current-user"
 export const CurrentUserIdTokenContext = createContext<{ idToken?: string }>({})
 CurrentUserIdTokenContext.displayName = "CurrentUserIdTokenContext"
 
-export const CurrentUserIdTokenProvider: FunctionComponent = ({ children }) => {
+export const useCurrentUserIdToken = () => {
   const state = useCurrentUser()
   const [idToken, setIdToken] = useState<string>()
 
@@ -19,8 +19,14 @@ export const CurrentUserIdTokenProvider: FunctionComponent = ({ children }) => {
     asyncGet()
   }, [isSuccessfullySignedIn(state)])
 
+  return idToken
+}
+
+export const CurrentUserIdTokenProvider: FunctionComponent = ({ children }) => {
   return (
-    <CurrentUserIdTokenContext.Provider value={{ idToken }}>
+    <CurrentUserIdTokenContext.Provider
+      value={{ idToken: useCurrentUserIdToken() }}
+    >
       {children}
     </CurrentUserIdTokenContext.Provider>
   )
