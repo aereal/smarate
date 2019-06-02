@@ -14,7 +14,6 @@
     "prettier": "^1.17.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-firebaseui": "^3.1.2",
     "react-scripts": "^3.0.1",
     "tslint": "^5.15.0",
     "tslint-config-prettier": "^1.18.0",
