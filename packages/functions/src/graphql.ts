@@ -1,23 +1,14 @@
-import { ApolloServer, gql } from "apollo-server-cloud-functions"
+import { ApolloServer } from "apollo-server-cloud-functions"
 import { ContextFunction } from "apollo-server-core"
 import admin from "firebase-admin"
+import { readFileSync } from "fs"
+import { parse } from "graphql"
 import { IncomingMessage } from "http"
+import { resolve } from "path"
 import { db } from "./firebase"
 
-const typeDefs = gql`
-  type Query {
-    visitor: User
-  }
-
-  type User {
-    id: String!
-    preference: UserPreference!
-  }
-
-  type UserPreference {
-    defaultFighterID: Int!
-  }
-`
+const rawSchema = readFileSync(resolve(__dirname, "../schema.graphql"))
+const typeDefs = parse(rawSchema.toString())
 
 interface AuthenticationContext {
   token?: string

@@ -1,0 +1,12 @@
+type Query {
+  visitor: User
+}
+
+type User {
+  id: String!
+  preference: UserPreference!
+}
+
+type UserPreference {
+  defaultFighterID: Int!
+}
