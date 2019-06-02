@@ -1,10 +1,14 @@
 import Grid from "@material-ui/core/Grid"
 import gql from "graphql-tag"
 import React, { FC } from "react"
-import { Query } from "react-apollo"
+import { Mutation, Query } from "react-apollo"
 import { FighterSelectUnit } from "../components/fighter-select-unit"
 import { Layout } from "../components/layout"
 import { MyPageQuery } from "./__generated__/MyPageQuery"
+import {
+  UpdateMyPreferenceMutation,
+  UpdateMyPreferenceMutationVariables,
+} from "./__generated__/UpdateMyPreferenceMutation"
 
 export const query = gql`
   query MyPageQuery {
@@ -13,6 +17,12 @@ export const query = gql`
         defaultFighterID
       }
     }
+  }
+`
+
+export const mutation = gql`
+  mutation UpdateMyPreferenceMutation($fighterID: Int!) {
+    setPreference(defaultFighterID: $fighterID)
   }
 `
 
@@ -32,13 +42,26 @@ export const MyPage: FC = () => (
                 }}
               />
             ) : result.data!.visitor ? (
-              <FighterSelectUnit
-                label="良く使うファイター"
-                fighterSelectorProps={{
-                  defaultSelectedFighterID: result.data!.visitor.preference
-                    .defaultFighterID,
-                }}
-              />
+              <Mutation<
+                UpdateMyPreferenceMutation,
+                UpdateMyPreferenceMutationVariables
+              >
+                mutation={mutation}
+              >
+                {setPreference => (
+                  <FighterSelectUnit
+                    label="良く使うファイター"
+                    fighterSelectorProps={{
+                      defaultSelectedFighterID: result.data!.visitor!.preference
+                        .defaultFighterID,
+                      onChange: fighterID =>
+                        fighterID === undefined
+                          ? null
+                          : setPreference({ variables: { fighterID } }),
+                    }}
+                  />
+                )}
+              </Mutation>
             ) : (
               <>not authenticated</>
             )}
