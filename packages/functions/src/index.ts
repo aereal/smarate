@@ -3,14 +3,13 @@
 import { RequestHandler } from "express"
 import * as express from "express"
 import admin from "firebase-admin"
-import { config, region } from "firebase-functions"
+import { region } from "firebase-functions"
+import { db } from "./firebase"
+import { graphqlHandler } from "./graphql"
 
 interface AuthenticatedRequest extends express.Request {
   authenticatedUserInfo: admin.auth.DecodedIdToken
 }
-
-admin.initializeApp(config().firebase)
-const db = admin.firestore()
 
 const cors: RequestHandler = (req, res, next) => {
   console.log(`---> start cors mw`)
@@ -108,3 +107,5 @@ exp.post("/my", async (req, res, next) => {
 })
 
 export const api = region("asia-northeast1").https.onRequest(exp)
+
+export const graphql = region("asia-northeast1").https.onRequest(graphqlHandler)
