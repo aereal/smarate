@@ -32,7 +32,7 @@ export const FighterSelector: React.FunctionComponent<Props> = ({
           selectedFighterID === undefined ? voidFighterID : selectedFighterID
         }
         onChange={ev => {
-          const fighterID = parseInt(ev.target.value)
+          const fighterID = parseInt(ev.target.value as string)
           updateFighter(fighterID)
           if (onChange !== undefined) {
             onChange(fighterID)
