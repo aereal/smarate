@@ -9,5 +9,8 @@
   ],
   "scripts": {
     "start": "yarn workspace web start"
+  },
+  "devDependencies": {
+    "firebase-tools": "^6.10.0"
   }
 }
