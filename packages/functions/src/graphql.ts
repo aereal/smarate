@@ -28,20 +28,52 @@ const withAuthenticationContext: ContextFunction<
   return { token }
 }
 
+const getUserFromContext = async (ctx: AuthenticationContext) => {
+  const { token } = ctx
+  if (token === undefined) {
+    return null
+  }
+  const decoded = await admin.auth().verifyIdToken(token)
+  return { id: decoded.uid }
+}
+
 const apollo = new ApolloServer({
   context: withAuthenticationContext,
   introspection: true,
   playground: true,
   resolvers: {
-    Query: {
-      visitor: async (parent, args, context: AuthenticationContext) => {
-        const { token } = context
-        if (token === undefined) {
-          return null
+    Mutation: {
+      setPreference: async (
+        parent,
+        args: { defaultFighterID?: number },
+        context: AuthenticationContext
+      ) => {
+        if (args.defaultFighterID === undefined) {
+          return false
         }
-        const decoded = await admin.auth().verifyIdToken(token)
-        return { id: decoded.uid }
+        const user = await getUserFromContext(context)
+        if (user === null) {
+          throw new Error("unauthenticated")
+        }
+        const { defaultFighterID } = args
+        if (defaultFighterID === undefined) {
+          return false
+        }
+
+        const ref = db.collection("user_preferences").doc(user.id)
+        try {
+          await ref.set({
+            defaultFighterID,
+          })
+          return true
+        } catch (e) {
+          return false
+        }
       },
+    },
+    Query: {
+      visitor: async (parent, args, context: AuthenticationContext) =>
+        getUserFromContext(context),
     },
     User: {
       preference: async (parent: { id: string }) => {

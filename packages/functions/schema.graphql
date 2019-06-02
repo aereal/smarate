@@ -2,6 +2,10 @@ type Query {
   visitor: User
 }
 
+type Mutation {
+  setPreference(defaultFighterID: Int): Boolean!
+}
+
 type User {
   id: String!
   preference: UserPreference!
