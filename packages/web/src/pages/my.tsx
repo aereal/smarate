@@ -4,9 +4,6 @@ import React, { FC } from "react"
 import { Query } from "react-apollo"
 import { FighterSelectUnit } from "../components/fighter-select-unit"
 import { Layout } from "../components/layout"
-import { OnError } from "../components/on-error"
-import { OnLoading } from "../components/on-loading"
-import { WithData } from "../components/with-data"
 import { MyPageQuery } from "./__generated__/MyPageQuery"
 
 export const query = gql`
@@ -25,25 +22,26 @@ export const MyPage: FC = () => (
       <Layout>
         <Grid item={true} xs={12} sm={6}>
           <Grid item={true} xs={12} sm={6}>
-            <OnLoading {...result}>{() => <>loading ...</>}</OnLoading>
-            <OnError {...result}>
-              {({ error }) => <>error: {JSON.stringify(error)}</>}
-            </OnError>
-            <WithData {...result}>
-              {({ data: { visitor } }) =>
-                visitor ? (
-                  <FighterSelectUnit
-                    label="良く使うファイター"
-                    fighterSelectorProps={{
-                      defaultSelectedFighterID:
-                        visitor.preference.defaultFighterID,
-                    }}
-                  />
-                ) : (
-                  <>not authenticated</>
-                )
-              }
-            </WithData>
+            {result.error ? (
+              <>error: {JSON.stringify(result.error)}</>
+            ) : result.loading ? (
+              <FighterSelectUnit
+                label="良く使うファイター"
+                fighterSelectorProps={{
+                  disabled: true,
+                }}
+              />
+            ) : result.data!.visitor ? (
+              <FighterSelectUnit
+                label="良く使うファイター"
+                fighterSelectorProps={{
+                  defaultSelectedFighterID: result.data!.visitor.preference
+                    .defaultFighterID,
+                }}
+              />
+            ) : (
+              <>not authenticated</>
+            )}
           </Grid>
         </Grid>
       </Layout>
