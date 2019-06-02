@@ -17,7 +17,7 @@
     "express": "^4.16.4",
     "firebase-admin": "~7.0.0",
     "firebase-functions": "^2.2.0",
-    "graphql": "^14.3.1"
+    "graphql": "14.2.1"
   },
   "devDependencies": {
     "@types/express": "^4.16.1",
@@ -30,5 +30,8 @@
   "private": true,
   "engines": {
     "node": "10"
+  },
+  "resolutions": {
+    "graphql": "14.2.1"
   }
 }
