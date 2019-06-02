@@ -2,12 +2,16 @@ import Grid from "@material-ui/core/Grid"
 import React, { FunctionComponent, useEffect } from "react"
 import { FighterSelectUnit } from "../components/fighter-select-unit"
 import { Layout } from "../components/layout"
-import { useAuth } from "../contexts/authentication"
+import {
+  isUnauthenticated,
+  isUninitialized,
+  useCurrentUser,
+} from "../contexts/current-user"
 import { useGetMyConfigAPI, useUpdateMyConfigAPI } from "../hooks/store-api"
 import { routes } from "../routes"
 
 export const MyPage: FunctionComponent = () => {
-  const { currentUser, loaded } = useAuth()
+  const state = useCurrentUser()
   const {
     doFetch: doUpdateMyConfig,
     response: updateResponse,
@@ -21,11 +25,11 @@ export const MyPage: FunctionComponent = () => {
     doGetMyConfig(undefined)
   }, [])
 
-  if (!loaded) {
+  if (isUninitialized(state)) {
     return null
   }
 
-  if (currentUser === undefined) {
+  if (isUnauthenticated(state)) {
     routes.root.push()
     return null
   }

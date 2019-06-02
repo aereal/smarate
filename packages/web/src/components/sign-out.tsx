@@ -1,6 +1,6 @@
 import Button, { ButtonProps } from "@material-ui/core/Button"
 import React, { FunctionComponent } from "react"
-import { useFirebaseAuth } from "../auth"
+import { signOut } from "../auth"
 
 type ButtonPropsOmittingOnClickHandler = Pick<
   ButtonProps,
@@ -9,12 +9,8 @@ type ButtonPropsOmittingOnClickHandler = Pick<
 
 export const SignOut: FunctionComponent<
   ButtonPropsOmittingOnClickHandler
-> = props => {
-  const { auth } = useFirebaseAuth()
-  const doSignOut = () => auth.signOut()
-  return (
-    <Button variant="contained" color="primary" {...props} onClick={doSignOut}>
-      ログアウト
-    </Button>
-  )
-}
+> = props => (
+  <Button variant="contained" color="primary" {...props} onClick={signOut}>
+    ログアウト
+  </Button>
+)

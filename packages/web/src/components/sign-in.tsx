@@ -1,16 +1,9 @@
+import Button from "@material-ui/core/Button"
 import React, { FunctionComponent } from "react"
-import { StyledFirebaseAuth } from "react-firebaseui"
-import { supportedAuthProviders, useFirebaseAuth } from "../auth"
+import { requestGoogleSignIn } from "../auth"
 
-const uiConfig: firebaseui.auth.Config = {
-  callbacks: {
-    signInSuccessWithAuthResult: () => false,
-  },
-  signInFlow: "popup",
-  signInOptions: supportedAuthProviders,
-}
-
-export const SignIn: FunctionComponent = () => {
-  const { auth } = useFirebaseAuth()
-  return <StyledFirebaseAuth firebaseAuth={auth} uiConfig={uiConfig} />
-}
+export const SignIn: FunctionComponent = () => (
+  <Button variant="contained" color="primary" onClick={requestGoogleSignIn}>
+    Sign in with Google
+  </Button>
+)
