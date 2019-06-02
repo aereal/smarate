@@ -6,6 +6,7 @@ import { Fighter, fighters } from "../models/fighter"
 export interface Props {
   candidates?: ReadonlyArray<Fighter>
   defaultSelectedFighterID?: number
+  disabled?: boolean
   onChange?: (selectedFighterID: number | undefined) => void
 }
 
@@ -14,6 +15,7 @@ const voidFighterID = -1
 export const FighterSelector: React.FunctionComponent<Props> = ({
   candidates,
   defaultSelectedFighterID,
+  disabled,
   onChange,
 }) => {
   const [selectedFighterID, updateFighter] = useState(defaultSelectedFighterID)
@@ -28,6 +30,7 @@ export const FighterSelector: React.FunctionComponent<Props> = ({
   return (
     <>
       <Select
+        disabled={disabled}
         value={
           selectedFighterID === undefined ? voidFighterID : selectedFighterID
         }

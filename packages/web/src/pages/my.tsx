@@ -1,67 +1,73 @@
 import Grid from "@material-ui/core/Grid"
-import React, { FunctionComponent, useEffect } from "react"
+import gql from "graphql-tag"
+import React, { FC } from "react"
+import { Mutation, Query } from "react-apollo"
 import { FighterSelectUnit } from "../components/fighter-select-unit"
 import { Layout } from "../components/layout"
+import { MyPageQuery } from "./__generated__/MyPageQuery"
 import {
-  isUnauthenticated,
-  isUninitialized,
-  useCurrentUser,
-} from "../contexts/current-user"
-import { useGetMyConfigAPI, useUpdateMyConfigAPI } from "../hooks/store-api"
-import { routes } from "../routes"
+  UpdateMyPreferenceMutation,
+  UpdateMyPreferenceMutationVariables,
+} from "./__generated__/UpdateMyPreferenceMutation"
 
-export const MyPage: FunctionComponent = () => {
-  const state = useCurrentUser()
-  const {
-    doFetch: doUpdateMyConfig,
-    response: updateResponse,
-  } = useUpdateMyConfigAPI()
-  const {
-    doFetch: doGetMyConfig,
-    response: getMyConfigResponse,
-  } = useGetMyConfigAPI()
-
-  useEffect(() => {
-    doGetMyConfig(undefined)
-  }, [])
-
-  if (isUninitialized(state)) {
-    return null
+export const query = gql`
+  query MyPageQuery {
+    visitor {
+      preference {
+        defaultFighterID
+      }
+    }
   }
+`
 
-  if (isUnauthenticated(state)) {
-    routes.root.push()
-    return null
+export const mutation = gql`
+  mutation UpdateMyPreferenceMutation($fighterID: Int!) {
+    setPreference(defaultFighterID: $fighterID)
   }
+`
 
-  const defaultSelectedFighterID =
-    getMyConfigResponse &&
-    (getMyConfigResponse as { defaultFighterID: number }).defaultFighterID
-
-  return (
-    <Layout>
-      <Grid item={true} xs={12} sm={6}>
+export const MyPage: FC = () => (
+  <Query<MyPageQuery> query={query}>
+    {result => (
+      <Layout>
         <Grid item={true} xs={12} sm={6}>
-          <FighterSelectUnit
-            label="良く使うファイター"
-            fighterSelectorProps={{
-              defaultSelectedFighterID,
-              onChange: fighterID => {
-                if (fighterID === undefined) {
-                  return
-                }
-                doUpdateMyConfig({ defaultFighterID: fighterID })
-              },
-            }}
-          />
+          <Grid item={true} xs={12} sm={6}>
+            {result.error ? (
+              <>error: {JSON.stringify(result.error)}</>
+            ) : result.loading ? (
+              <FighterSelectUnit
+                label="良く使うファイター"
+                fighterSelectorProps={{
+                  disabled: true,
+                }}
+              />
+            ) : result.data!.visitor ? (
+              <Mutation<
+                UpdateMyPreferenceMutation,
+                UpdateMyPreferenceMutationVariables
+              >
+                mutation={mutation}
+              >
+                {setPreference => (
+                  <FighterSelectUnit
+                    label="良く使うファイター"
+                    fighterSelectorProps={{
+                      defaultSelectedFighterID: result.data!.visitor!.preference
+                        .defaultFighterID,
+                      onChange: fighterID =>
+                        fighterID === undefined
+                          ? null
+                          : setPreference({ variables: { fighterID } }),
+                    }}
+                  />
+                )}
+              </Mutation>
+            ) : (
+              <>not authenticated</>
+            )}
+          </Grid>
         </Grid>
-        {updateResponse !== undefined ? (
-          <pre>response: {JSON.stringify(updateResponse)}</pre>
-        ) : null}
-        {getMyConfigResponse !== undefined ? (
-          <pre>response: {JSON.stringify(getMyConfigResponse)}</pre>
-        ) : null}
-      </Grid>
-    </Layout>
-  )
-}
+      </Layout>
+    )}
+  </Query>
+)
