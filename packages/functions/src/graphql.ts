@@ -1,3 +1,4 @@
+import { Timestamp } from "@google-cloud/firestore"
 import { ApolloServer } from "apollo-server-cloud-functions"
 import { ContextFunction } from "apollo-server-core"
 import admin from "firebase-admin"
@@ -6,6 +7,7 @@ import { parse } from "graphql"
 import { IncomingMessage } from "http"
 import { resolve } from "path"
 import { db } from "./firebase"
+import { FightResult } from "./model"
 
 const rawSchema = readFileSync(resolve(__dirname, "../schema.graphql"))
 const typeDefs = parse(rawSchema.toString())
@@ -42,6 +44,9 @@ const apollo = new ApolloServer({
   introspection: true,
   playground: true,
   resolvers: {
+    FightResult: {
+      recordedAt: (parent: FightResult) => parent.recordedAt.toISOString(),
+    },
     Mutation: {
       recordResult: async (
         parent,
@@ -118,6 +123,30 @@ const apollo = new ApolloServer({
       },
     },
     Query: {
+      fightResults: async (parent, args: { first: number }) => {
+        const query = await db
+          .collection("global_results")
+          .orderBy("recordedAt", "desc")
+          .limit(args.first)
+        try {
+          const globalResultRefs = await query.get()
+          const nodes: FightResult[] = []
+          globalResultRefs.forEach(snapshot => {
+            const data = (snapshot.data() as any) as {
+              lostFighter: { id: number }
+              wonFighter: { id: number }
+              recordedAt: Timestamp
+            }
+            nodes.push({
+              ...data,
+              recordedAt: data.recordedAt.toDate(),
+            })
+          })
+          return { nodes }
+        } catch (e) {
+          throw e
+        }
+      },
       visitor: async (parent, args, context: AuthenticationContext) =>
         getUserFromContext(context),
     },
