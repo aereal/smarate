@@ -43,6 +43,52 @@ const apollo = new ApolloServer({
   playground: true,
   resolvers: {
     Mutation: {
+      recordResult: async (
+        parent,
+        args: { myFighterID: number; rivalFighterID: number; won: boolean },
+        context: AuthenticationContext
+      ) => {
+        const currentUser = await getUserFromContext(context)
+        if (currentUser === null) {
+          throw new Error("unauthenticated")
+        }
+
+        const batch = db.batch()
+
+        const recordedAt = new Date()
+        const globalResultRef = db.collection("global_results").doc()
+        const wonFighterID = args.won ? args.myFighterID : args.rivalFighterID
+        const lostFighterID = args.won ? args.rivalFighterID : args.myFighterID
+        batch.set(globalResultRef, {
+          lostFighter: {
+            id: lostFighterID,
+          },
+          recordedAt,
+          wonFighter: {
+            id: wonFighterID,
+          },
+        })
+
+        const userResultRef = db.collection("user_results").doc()
+        batch.set(userResultRef, {
+          myFighter: {
+            id: args.myFighterID,
+          },
+          recordedAt,
+          rivalFighter: {
+            id: args.rivalFighterID,
+          },
+          won: args.won,
+        })
+
+        try {
+          await batch.commit()
+          return true
+        } catch (e) {
+          console.error(`failed to write: ${e}`) // tslint:disable-line:no-console
+          return false
+        }
+      },
       setPreference: async (
         parent,
         args: { defaultFighterID?: number },

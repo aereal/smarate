@@ -4,6 +4,11 @@ type Query {
 
 type Mutation {
   setPreference(defaultFighterID: Int): Boolean!
+  recordResult(
+    myFighterID: Int!,
+    rivalFighterID: Int!,
+    won: Boolean!
+  ): Boolean!
 }
 
 type User {
