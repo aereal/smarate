@@ -1,7 +1,7 @@
 import Grid from "@material-ui/core/Grid"
 import gql from "graphql-tag"
 import React, { useState } from "react"
-import { Mutation } from "react-apollo"
+import { Mutation, Query } from "react-apollo"
 import { ResultSwitch } from "../components//result-switch"
 import { RivalFighterSelector } from "../components//rival-fighter-selector"
 import { Layout } from "../components/layout"
@@ -12,6 +12,7 @@ import {
   RecordResultMutation,
   RecordResultMutationVariables,
 } from "./__generated__/RecordResultMutation"
+import { RecordResultQuery } from "./__generated__/RecordResultQuery"
 
 const mutation = gql`
   mutation RecordResultMutation(
@@ -27,6 +28,16 @@ const mutation = gql`
   }
 `
 
+const query = gql`
+  query RecordResultQuery {
+    visitor {
+      preference {
+        defaultFighterID
+      }
+    }
+  }
+`
+
 export const SubmitResultPage: React.FunctionComponent<{}> = () => {
   const [rivalFighterID, setRivalFighterID] = useState<number>()
   const [myFighterID, setMyFighterID] = useState<number>()
@@ -35,11 +46,24 @@ export const SubmitResultPage: React.FunctionComponent<{}> = () => {
   return (
     <Layout>
       <Grid item={true} xs={12} sm={6}>
-        <MyFighterSelector
-          fighterSelectorProps={{
-            onChange: id => setMyFighterID(id),
+        <Query<RecordResultQuery> query={query}>
+          {({ data, loading, error }) => {
+            const loaded = !error && !loading
+            const defaultFighterID =
+              data && data.visitor && data.visitor.preference.defaultFighterID
+            return (
+              <MyFighterSelector
+                fighterSelectorProps={{
+                  ...(defaultFighterID
+                    ? { defaultSelectedFighterID: defaultFighterID }
+                    : {}),
+                  disabled: !loaded,
+                  onChange: id => setMyFighterID(id),
+                }}
+              />
+            )
           }}
-        />
+        </Query>
       </Grid>
       <Grid item={true} xs={12} sm={6}>
         <RivalFighterSelector
