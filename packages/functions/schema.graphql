@@ -15,6 +15,7 @@ type Mutation {
 type User {
   id: String!
   preference: UserPreference!
+  fightResults(first: Int!): FightResultConnection!
 }
 
 type UserPreference {

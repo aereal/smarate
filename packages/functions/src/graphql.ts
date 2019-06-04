@@ -151,6 +151,43 @@ const apollo = new ApolloServer({
         getUserFromContext(context),
     },
     User: {
+      fightResults: async (parent: { id: string }, args: { first: number }) => {
+        const query = await db
+          .collection("user_results")
+          .orderBy("recordedAt", "desc")
+          .limit(args.first)
+        try {
+          const userResultRefs = await query.get()
+          const nodes: FightResult[] = []
+          userResultRefs.forEach(snapshot => {
+            const {
+              myFighter,
+              recordedAt: recordedAtTS,
+              rivalFighter,
+              won,
+            } = (snapshot.data() as any) as {
+              myFighter: {
+                id: number
+              }
+              recordedAt: Timestamp
+              rivalFighter: {
+                id: number
+              }
+              won: boolean
+            }
+            const wonFighter = won ? myFighter : rivalFighter
+            const lostFighter = won ? rivalFighter : myFighter
+            nodes.push({
+              lostFighter,
+              recordedAt: recordedAtTS.toDate(),
+              wonFighter,
+            })
+          })
+          return { nodes }
+        } catch (e) {
+          throw e
+        }
+      },
       preference: async (parent: { id: string }) => {
         const ref = db.collection("user_preferences").doc(parent.id)
         try {
