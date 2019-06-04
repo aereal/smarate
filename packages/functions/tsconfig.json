@@ -8,6 +8,7 @@
     "sourceMap": true,
     "strict": true,
     "target": "es2015",
+    "esModuleInterop": true,
     "resolveJsonModule": true
   },
   "compileOnSave": true,
