@@ -1,5 +1,6 @@
 import { AuthenticationContext, getUserFromContext } from "../auth-context"
-import { fetchGlobalFightResults } from "../repo"
+import { Fighter } from "../model"
+import { fetchFighterByNameJa, fetchGlobalFightResults } from "../repo"
 
 export const buildQueryResolver = (db: FirebaseFirestore.Firestore) => ({
   fightResults: async (_: any, args: { first: number }) => {
@@ -16,6 +17,10 @@ export const buildQueryResolver = (db: FirebaseFirestore.Firestore) => ({
       throw e
     }
   },
+  fighter: async (
+    _: any,
+    args: { name: string }
+  ): Promise<Fighter | undefined> => fetchFighterByNameJa(args.name),
   visitor: async (parent: any, args: any, context: AuthenticationContext) =>
     getUserFromContext(context),
 })
