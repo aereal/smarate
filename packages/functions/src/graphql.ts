@@ -1,10 +1,12 @@
 import { ApolloServer } from "apollo-server-cloud-functions"
-import { ContextFunction } from "apollo-server-core"
-import admin from "firebase-admin"
 import { readFileSync } from "fs"
 import { parse } from "graphql"
-import { IncomingMessage } from "http"
 import { resolve } from "path"
+import {
+  AuthenticationContext,
+  getUserFromContext,
+  withAuthenticationContext,
+} from "./auth-context"
 import { db } from "./firebase"
 import { FightResult } from "./model"
 import {
@@ -17,33 +19,6 @@ import {
 
 const rawSchema = readFileSync(resolve(__dirname, "../schema.graphql"))
 const typeDefs = parse(rawSchema.toString())
-
-interface AuthenticationContext {
-  token?: string
-}
-
-const withAuthenticationContext: ContextFunction<
-  { req: IncomingMessage },
-  AuthenticationContext
-> = ({ req }) => {
-  const {
-    headers: { authorization },
-  } = req
-  if (authorization === undefined) {
-    return {}
-  }
-  const [_, token] = authorization.split(" ", 2)
-  return { token }
-}
-
-const getUserFromContext = async (ctx: AuthenticationContext) => {
-  const { token } = ctx
-  if (token === undefined) {
-    return null
-  }
-  const decoded = await admin.auth().verifyIdToken(token)
-  return { id: decoded.uid }
-}
 
 const apollo = new ApolloServer({
   context: withAuthenticationContext,
