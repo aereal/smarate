@@ -51,6 +51,9 @@ export const SubmitResultPage: React.FunctionComponent<{}> = () => {
             const loaded = !error && !loading
             const defaultFighterID =
               data && data.visitor && data.visitor.preference.defaultFighterID
+            if (defaultFighterID !== null && defaultFighterID !== undefined) {
+              setMyFighterID(defaultFighterID)
+            }
             return (
               <MyFighterSelector
                 fighterSelectorProps={{
