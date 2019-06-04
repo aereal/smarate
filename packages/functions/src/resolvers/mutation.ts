@@ -3,7 +3,7 @@ import { recordFightResult, setUserPreference } from "../repo"
 
 export const buildMutationResolver = (db: FirebaseFirestore.Firestore) => ({
   recordResult: async (
-    parent,
+    _: any,
     args: { myFighterID: number; rivalFighterID: number; won: boolean },
     context: AuthenticationContext
   ) => {
@@ -26,7 +26,7 @@ export const buildMutationResolver = (db: FirebaseFirestore.Firestore) => ({
     }
   },
   setPreference: async (
-    parent,
+    _: any,
     args: { defaultFighterID?: number },
     context: AuthenticationContext
   ) => {

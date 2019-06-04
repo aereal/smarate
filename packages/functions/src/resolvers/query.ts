@@ -2,7 +2,7 @@ import { AuthenticationContext, getUserFromContext } from "../auth-context"
 import { fetchGlobalFightResults } from "../repo"
 
 export const buildQueryResolver = (db: FirebaseFirestore.Firestore) => ({
-  fightResults: async (_, args: { first: number }) => {
+  fightResults: async (_: any, args: { first: number }) => {
     try {
       const dtos = await fetchGlobalFightResults(db, args.first)
       const conn = {
@@ -16,6 +16,6 @@ export const buildQueryResolver = (db: FirebaseFirestore.Firestore) => ({
       throw e
     }
   },
-  visitor: async (parent, args, context: AuthenticationContext) =>
+  visitor: async (parent: any, args: any, context: AuthenticationContext) =>
     getUserFromContext(context),
 })

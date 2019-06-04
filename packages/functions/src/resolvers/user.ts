@@ -1,7 +1,7 @@
 import { fetchUserFightResults, fetchUserPreference } from "../repo"
 
 export const buildUserResolver = (db: FirebaseFirestore.Firestore) => ({
-  fightResults: async (_, args: { first: number }) => {
+  fightResults: async (_: any, args: { first: number }) => {
     try {
       const userFightResults = await fetchUserFightResults(db, args.first)
       return { nodes: userFightResults }
