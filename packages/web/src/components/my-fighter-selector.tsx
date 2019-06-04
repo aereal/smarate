@@ -1,9 +1,14 @@
 import React from "react"
-import { FighterSelectUnit } from "./fighter-select-unit"
+import {
+  FighterSelectUnit,
+  Props as FighterSelectUnitProps,
+} from "./fighter-select-unit"
 
-export const MyFighterSelector = () => (
-  <FighterSelectUnit
-    label="あなたのファイター"
-    fighterSelectorProps={{ defaultSelectedFighterID: 62 }}
-  />
+type Props = Pick<
+  FighterSelectUnitProps,
+  Exclude<keyof FighterSelectUnitProps, "label">
+>
+
+export const MyFighterSelector = (props: Props) => (
+  <FighterSelectUnit label="あなたのファイター" {...props} />
 )

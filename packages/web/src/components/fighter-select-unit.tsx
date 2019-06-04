@@ -15,7 +15,7 @@ const styles = (theme: Theme) =>
     },
   })
 
-interface Props {
+export interface Props {
   label: string
   fighterSelectorProps?: FighterSelectorProps
 }
