@@ -7,6 +7,7 @@ import { FightResult, Lose, Win } from "../models/result"
 
 interface Props {
   selectedResult?: FightResult
+  onChange: (result: FightResult) => void
 }
 
 const styles = createStyles({
@@ -17,11 +18,16 @@ const styles = createStyles({
 
 export const ResultSwitch = withStyles(styles)<
   FunctionComponent<Props & WithStyles<keyof typeof styles>>
->(({ selectedResult, classes }) => {
+>(({ selectedResult, classes, onChange }) => {
   const [result, changeResult] = useState<FightResult>(
     selectedResult !== undefined ? selectedResult : Win
   )
-  const toggleResult = () => changeResult(prev => (prev === Win ? Lose : Win))
+  const toggleResult = () =>
+    changeResult(prev => {
+      const nextResult = prev === Win ? Lose : Win
+      onChange(nextResult)
+      return nextResult
+    })
 
   return (
     <RadioGroup

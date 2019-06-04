@@ -1,10 +1,10 @@
 import Button, { ButtonProps } from "@material-ui/core/Button"
 import React from "react"
 
-export const SubmitButton: React.FunctionComponent<
-  Pick<ButtonProps, "onClick">
-> = ({ onClick }) => (
-  <Button variant="contained" color="primary" onClick={onClick}>
+type Props = Pick<ButtonProps, Exclude<keyof ButtonProps, "variant" | "color">>
+
+export const SubmitButton: React.FunctionComponent<Props> = props => (
+  <Button variant="contained" color="primary" {...props}>
     結果を提出
   </Button>
 )
