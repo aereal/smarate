@@ -1,6 +1,10 @@
 export interface Fighter {
   id: number
-  // name: string
+  name: LocalizedName
+}
+
+export interface LocalizedName {
+  ja: string
 }
 
 export interface FightResult {

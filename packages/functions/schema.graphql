@@ -1,6 +1,7 @@
 type Query {
   visitor: User
   fightResults(first: Int!): FightResultConnection!
+  fighter(name: String!): Fighter
 }
 
 type Mutation {
@@ -24,7 +25,11 @@ type UserPreference {
 
 type Fighter {
   id: String!
-  name: String!
+  name: LocalizedName!
+}
+
+type LocalizedName {
+  ja: String!
 }
 
 type FightResultConnection {
