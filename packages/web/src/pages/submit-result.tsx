@@ -7,8 +7,8 @@ import { ResultSwitch } from "../components//result-switch"
 import { RivalFighterSelector } from "../components//rival-fighter-selector"
 import { Layout } from "../components/layout"
 import { MyFighterSelector } from "../components/my-fighter-selector"
+import { SuccessfulSnackbarContent } from "../components/state-snackbar-content"
 import { SubmitButton } from "../components/submit-button"
-import { SuccessfulSnackbarContent } from "../components/successful-snackbar-content"
 import { FightResult, Lose, Win } from "../models/result"
 import {
   RecordResultMutation,
