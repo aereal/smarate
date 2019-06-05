@@ -1,20 +1,11 @@
-import { createStyles, withStyles, WithStyles } from "@material-ui/core"
 import AppBar from "@material-ui/core/AppBar"
+import Container from "@material-ui/core/Container"
 import CssBaseline from "@material-ui/core/CssBaseline"
-import Grid from "@material-ui/core/Grid"
 import Toolbar from "@material-ui/core/Toolbar"
 import Typography from "@material-ui/core/Typography"
-import React, { FunctionComponent } from "react"
+import React, { FC } from "react"
 
-const styles = createStyles({
-  root: {
-    flexGrow: 1,
-  },
-})
-
-export const Layout = withStyles(styles)<
-  FunctionComponent<WithStyles<keyof typeof styles>>
->(({ children, classes }) => (
+export const Layout: FC = ({ children }) => (
   <>
     <CssBaseline />
     <AppBar position="static" color="primary">
@@ -24,10 +15,6 @@ export const Layout = withStyles(styles)<
         </Typography>
       </Toolbar>
     </AppBar>
-    <div className={classes.root}>
-      <Grid container={true} spacing={10}>
-        {children}
-      </Grid>
-    </div>
+    <Container maxWidth="md">{children}</Container>
   </>
-))
+)
