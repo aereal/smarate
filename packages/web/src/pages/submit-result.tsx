@@ -1,4 +1,5 @@
 import Grid from "@material-ui/core/Grid"
+import Snackbar from "@material-ui/core/Snackbar"
 import gql from "graphql-tag"
 import React, { useState } from "react"
 import { Mutation, Query } from "react-apollo"
@@ -7,6 +8,7 @@ import { RivalFighterSelector } from "../components//rival-fighter-selector"
 import { Layout } from "../components/layout"
 import { MyFighterSelector } from "../components/my-fighter-selector"
 import { SubmitButton } from "../components/submit-button"
+import { SuccessfulSnackbarContent } from "../components/successful-snackbar-content"
 import { FightResult, Lose, Win } from "../models/result"
 import {
   RecordResultMutation,
@@ -42,7 +44,18 @@ export const SubmitResultPage: React.FunctionComponent<{}> = () => {
   const [rivalFighterID, setRivalFighterID] = useState<number>()
   const [myFighterID, setMyFighterID] = useState<number>()
   const [won, setWon] = useState(true)
+  const [completed, setCompleted] = useState(false)
   const onResultChange = (result: FightResult) => setWon(result === Win)
+  const onSubmit = (callback: () => Promise<void>) => async () => {
+    setCompleted(false)
+    await callback()
+    setCompleted(true)
+    setRivalFighterID(undefined)
+    setTimeout(() => {
+      setCompleted(false)
+    }, 5000)
+  }
+
   return (
     <Layout>
       <Grid item={true} xs={12} sm={6}>
@@ -90,20 +103,25 @@ export const SubmitResultPage: React.FunctionComponent<{}> = () => {
               disabled={
                 rivalFighterID === undefined || myFighterID === undefined
               }
-              // tslint:disable-next-line:jsx-no-lambda
-              onClick={() =>
-                recordResult({
-                  variables: {
-                    myFighterID: myFighterID!,
-                    rivalFighterID: rivalFighterID!,
-                    won,
-                  },
-                })
-              }
+              onClick={onSubmit(
+                // tslint:disable-next-line:jsx-no-lambda
+                async () => {
+                  await recordResult({
+                    variables: {
+                      myFighterID: myFighterID!,
+                      rivalFighterID: rivalFighterID!,
+                      won,
+                    },
+                  })
+                }
+              )}
             />
           )}
         </Mutation>
       </Grid>
+      <Snackbar open={completed}>
+        <SuccessfulSnackbarContent message="Completed" />
+      </Snackbar>
     </Layout>
   )
 }
