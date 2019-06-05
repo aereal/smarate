@@ -8,6 +8,7 @@ import { RivalFighterSelector } from "../components//rival-fighter-selector"
 import { Layout } from "../components/layout"
 import { MyFighterSelector } from "../components/my-fighter-selector"
 import { SubmitButton } from "../components/submit-button"
+import { SuccessfulSnackbarContent } from "../components/successful-snackbar-content"
 import { FightResult, Lose, Win } from "../models/result"
 import {
   RecordResultMutation,
@@ -118,7 +119,9 @@ export const SubmitResultPage: React.FunctionComponent<{}> = () => {
           )}
         </Mutation>
       </Grid>
-      <Snackbar open={completed} message="Completed!" />
+      <Snackbar open={completed}>
+        <SuccessfulSnackbarContent message="Completed" />
+      </Snackbar>
     </Layout>
   )
 }
