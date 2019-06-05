@@ -4,13 +4,13 @@ import CssBaseline from "@material-ui/core/CssBaseline"
 import Drawer from "@material-ui/core/Drawer"
 import Grid from "@material-ui/core/Grid"
 import IconButton from "@material-ui/core/IconButton"
+import Link from "@material-ui/core/Link"
 import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemIcon from "@material-ui/core/ListItemIcon"
 import ListItemText from "@material-ui/core/ListItemText"
 import { makeStyles } from "@material-ui/core/styles"
 import Toolbar from "@material-ui/core/Toolbar"
-import Typography from "@material-ui/core/Typography"
 import AddIcon from "@material-ui/icons/Add"
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft"
 import MenuIcon from "@material-ui/icons/Menu"
@@ -117,9 +117,9 @@ export const Layout: FC = ({ children }) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" color="inherit">
+          <Link variant="h6" color="inherit" {...routes.root.link()}>
             Smarate
-          </Typography>
+          </Link>
         </Toolbar>
       </AppBar>
       <Drawer
