@@ -2,7 +2,6 @@ import Grid from "@material-ui/core/Grid"
 import React, { FunctionComponent } from "react"
 import { Layout } from "../components/layout"
 import { SignIn } from "../components/sign-in"
-import { SignOut } from "../components/sign-out"
 import {
   isSuccessfullySignedIn,
   useCurrentUser,
@@ -16,7 +15,6 @@ export const RootPage: FunctionComponent<{}> = () => {
         {isSuccessfullySignedIn(state) ? (
           <>
             <p>Hi, {state.currentUser.uid}</p>
-            <SignOut />
           </>
         ) : (
           <SignIn />
