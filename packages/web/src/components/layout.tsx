@@ -5,18 +5,13 @@ import Drawer from "@material-ui/core/Drawer"
 import Grid from "@material-ui/core/Grid"
 import IconButton from "@material-ui/core/IconButton"
 import Link from "@material-ui/core/Link"
-import List from "@material-ui/core/List"
-import ListItem from "@material-ui/core/ListItem"
-import ListItemIcon from "@material-ui/core/ListItemIcon"
-import ListItemText from "@material-ui/core/ListItemText"
 import { makeStyles } from "@material-ui/core/styles"
 import Toolbar from "@material-ui/core/Toolbar"
-import AddIcon from "@material-ui/icons/Add"
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft"
 import MenuIcon from "@material-ui/icons/Menu"
-import PersonIcon from "@material-ui/icons/Person"
 import React, { FC, useState } from "react"
 import { routes } from "../routes"
+import { DrawerMenuList } from "./drawer-menu-list"
 
 const drawerWidth = 240
 
@@ -137,20 +132,7 @@ export const Layout: FC = ({ children }) => {
             <ChevronLeftIcon />
           </IconButton>
         </div>
-        <List>
-          <ListItem button={true} {...routes.submitResult.link()}>
-            <ListItemIcon>
-              <AddIcon />
-            </ListItemIcon>
-            <ListItemText primary="試合結果を記録する" />
-          </ListItem>
-          <ListItem button={true} {...routes.my.link()}>
-            <ListItemIcon>
-              <PersonIcon />
-            </ListItemIcon>
-            <ListItemText primary="マイページ" />
-          </ListItem>
-        </List>
+        <DrawerMenuList />
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
