@@ -7,6 +7,7 @@ import Link from "@material-ui/core/Link"
 import { makeStyles } from "@material-ui/core/styles"
 import Toolbar from "@material-ui/core/Toolbar"
 import MenuIcon from "@material-ui/icons/Menu"
+import clsx from "clsx"
 import React, { FC, useState } from "react"
 import { routes } from "../routes"
 import { DrawerMenu } from "./drawer-menu"
@@ -53,9 +54,6 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const cls = (classes: Array<string | boolean>): string =>
-  classes.filter(c => c !== false).join(" ")
-
 export const Layout: FC = ({ children }) => {
   const classes = useStyles()
   const [openDrawer, setOpenDrawer] = useState<boolean>(false)
@@ -67,7 +65,7 @@ export const Layout: FC = ({ children }) => {
       <AppBar
         position="absolute"
         color="primary"
-        className={cls([classes.appBar, openDrawer && classes.appBarShift])}
+        className={clsx(classes.appBar, openDrawer && classes.appBarShift)}
       >
         <Toolbar className={classes.toolbar}>
           <IconButton
@@ -75,10 +73,10 @@ export const Layout: FC = ({ children }) => {
             color="inherit"
             aria-label="Open Menu"
             onClick={handleDrawerOpen}
-            className={cls([
+            className={clsx(
               classes.menuButton,
-              openDrawer && classes.menuButtonHidden,
-            ])}
+              openDrawer && classes.menuButtonHidden
+            )}
           >
             <MenuIcon />
           </IconButton>

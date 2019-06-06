@@ -2,6 +2,7 @@ import Drawer from "@material-ui/core/Drawer"
 import IconButton from "@material-ui/core/IconButton"
 import { makeStyles } from "@material-ui/core/styles"
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft"
+import clsx from "clsx"
 import React, { Dispatch, FC, SetStateAction } from "react"
 import { DrawerMenuList } from "./drawer-menu-list"
 
@@ -37,9 +38,6 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const cls = (classes: Array<string | boolean>): string =>
-  classes.filter(c => c !== false).join(" ")
-
 export const DrawerMenu: FC<{
   open: boolean
   setOpen: Dispatch<SetStateAction<boolean>>
@@ -52,7 +50,7 @@ export const DrawerMenu: FC<{
       variant="permanent"
       open={open}
       classes={{
-        paper: cls([classes.drawerPaper, !open && classes.drawerPaperClose]),
+        paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
       }}
     >
       <div className={classes.toolbarIcon}>
