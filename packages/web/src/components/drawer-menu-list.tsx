@@ -10,6 +10,12 @@ import React, { FC } from "react"
 import { signOut } from "../auth"
 import { routes } from "../routes"
 
+const signOutWithConfirmation = async () => {
+  if (window.confirm("ログアウトしますか?")) {
+    await signOut()
+  }
+}
+
 export const DrawerMenuList: FC = () => (
   <>
     <List>
@@ -28,7 +34,7 @@ export const DrawerMenuList: FC = () => (
     </List>
     <Divider />
     <List>
-      <ListItem button={true} onClick={signOut}>
+      <ListItem button={true} onClick={signOutWithConfirmation}>
         <ListItemIcon>
           <CloseIcon />
         </ListItemIcon>
