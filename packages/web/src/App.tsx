@@ -7,6 +7,7 @@ import { MyPage } from "./pages/my"
 import { RootPage } from "./pages/root"
 import { SubmitResultPage } from "./pages/submit-result"
 import { getCurrentRoute, listen, routes } from "./routes"
+import { CustomizedThemeProvider } from "./theme"
 
 const Page: FunctionComponent<{ route: Route<typeof routes> }> = ({
   route,
@@ -32,7 +33,9 @@ export const App: FunctionComponent<{}> = () => {
     <DefaultCurrentUserProvider>
       <CurrentUserIdTokenProvider>
         <AuthenApolloProvider>
-          <Page route={route} />
+          <CustomizedThemeProvider>
+            <Page route={route} />
+          </CustomizedThemeProvider>
         </AuthenApolloProvider>
       </CurrentUserIdTokenProvider>
     </DefaultCurrentUserProvider>
