@@ -11,3 +11,12 @@ const byJaName = fighters.reduce<Record<string, RawFighter>>((a, f) => {
 export const fetchFighterByNameJa = async (
   jaName: string
 ): Promise<Fighter | undefined> => byJaName[jaName]
+
+const byID = fighters.reduce<Record<number, RawFighter>>((a, f) => {
+  a[f.id] = f
+  return a
+}, {})
+
+export const fetchFighterByID = async (
+  id: number
+): Promise<Fighter | undefined> => byID[id]
