@@ -38,14 +38,14 @@ export const fetchGlobalFightResults = async (
 export const fetchUserFightResults = async (
   db: FirebaseFirestore.Firestore,
   first: number
-): Promise<FightResultDTO[]> => {
+): Promise<UserFightResultDTO[]> => {
   const query = await db
     .collection(USER_RESULTS)
     .orderBy("recordedAt", "desc")
     .limit(first)
   const userResultRefs = await query.get()
-  return userResultRefs.docs.map(snapshot =>
-    userResultToGlobalResult(snapshot.data() as UserFightResultDTO)
+  return userResultRefs.docs.map(
+    snapshot => snapshot.data() as UserFightResultDTO
   )
 }
 
