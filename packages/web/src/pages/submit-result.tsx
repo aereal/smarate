@@ -135,7 +135,7 @@ export const SubmitResultPage: React.FunctionComponent<{}> = () => {
         </Mutation>
       </Grid>
       <Snackbar open={submitState === "success"}>
-        <SuccessfulSnackbarContent message="Completed" />
+        <SuccessfulSnackbarContent message="提出しました" />
       </Snackbar>
       <Snackbar open={submitState === "error"}>
         <ErrorSnackbarContent message="失敗しました" />
