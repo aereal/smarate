@@ -8,7 +8,10 @@ import { ResultSwitch } from "../components//result-switch"
 import { RivalFighterSelector } from "../components//rival-fighter-selector"
 import { Layout } from "../components/layout"
 import { MyFighterSelector } from "../components/my-fighter-selector"
-import { SuccessfulSnackbarContent } from "../components/state-snackbar-content"
+import {
+  ErrorSnackbarContent,
+  SuccessfulSnackbarContent,
+} from "../components/state-snackbar-content"
 import { SubmitButton } from "../components/submit-button"
 import { FightResult, Lose, Win } from "../models/result"
 import {
@@ -133,6 +136,9 @@ export const SubmitResultPage: React.FunctionComponent<{}> = () => {
       </Grid>
       <Snackbar open={submitState === "success"}>
         <SuccessfulSnackbarContent message="Completed" />
+      </Snackbar>
+      <Snackbar open={submitState === "error"}>
+        <ErrorSnackbarContent message="失敗しました" />
       </Snackbar>
     </Layout>
   )
