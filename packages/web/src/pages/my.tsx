@@ -7,6 +7,10 @@ import { withDelay } from "../async"
 import { FighterSelectUnit } from "../components/fighter-select-unit"
 import { Layout } from "../components/layout"
 import {
+  MyFightResultList,
+  myFightResultListFragment,
+} from "../components/my-fight-result-list"
+import {
   ErrorSnackbarContent,
   SuccessfulSnackbarContent,
 } from "../components/state-snackbar-content"
@@ -22,8 +26,10 @@ export const query = gql`
       preference {
         defaultFighterID
       }
+      ...MyFightResultListFragment
     }
   }
+  ${myFightResultListFragment}
 `
 
 export const mutation = gql`
@@ -57,7 +63,7 @@ export const MyPage: FC = () => {
     <Query<MyPageQuery> query={query}>
       {result => (
         <Layout>
-          <Grid item={true} xs={12} sm={6}>
+          <Grid item={true} xs={12} md={6}>
             <Grid item={true} xs={12} sm={6}>
               {result.error ? (
                 <>error: {JSON.stringify(result.error)}</>
@@ -96,6 +102,20 @@ export const MyPage: FC = () => {
                 <>not authenticated</>
               )}
             </Grid>
+          </Grid>
+          <Grid item={true} xs={12} md={6}>
+            <MyFightResultList
+              __typename="User"
+              fightResults={{
+                __typename: "UserFightResultConnection",
+                nodes:
+                  result.loading ||
+                  result.error ||
+                  !(result.data && result.data.visitor)
+                    ? []
+                    : result.data.visitor.fightResults.nodes,
+              }}
+            />
           </Grid>
           <Snackbar open={updateResult === "success"}>
             <SuccessfulSnackbarContent message="保存しました" />
