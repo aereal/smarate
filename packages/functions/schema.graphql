@@ -24,7 +24,7 @@ type UserPreference {
 }
 
 type Fighter {
-  id: String!
+  id: Int!
   name: LocalizedName!
 }
 

@@ -4,19 +4,19 @@ const GLOBAL_RESULTS = "global_results" as const
 
 const USER_RESULTS = "user_results" as const
 
-interface FighterDTO {
-  id: number
+interface FighterDTO<ID extends string | number> {
+  id: ID
 }
 
-interface FightResultDTO {
-  lostFighter: FighterDTO
-  wonFighter: FighterDTO
+interface FightResultDTO<ID extends string | number = number> {
+  lostFighter: FighterDTO<ID>
+  wonFighter: FighterDTO<ID>
   recordedAt: Timestamp
 }
 
-interface UserFightResultDTO {
-  myFighter: FighterDTO
-  rivalFighter: FighterDTO
+interface UserFightResultDTO<ID extends string | number = number> {
+  myFighter: FighterDTO<ID>
+  rivalFighter: FighterDTO<ID>
   recordedAt: Timestamp
   won: boolean
 }
@@ -30,9 +30,24 @@ export const fetchGlobalFightResults = async (
     .orderBy("recordedAt", "desc")
     .limit(first)
   const globalResultRefs = await query.get()
-  return globalResultRefs.docs.map(
-    snapshot => snapshot.data() as FightResultDTO
-  )
+  return globalResultRefs.docs.map(snapshot => {
+    const data = snapshot.data() as FightResultDTO<string | number>
+    return {
+      ...data,
+      lostFighter: {
+        id:
+          typeof data.lostFighter.id === "string"
+            ? parseInt(data.lostFighter.id, 10)
+            : data.lostFighter.id,
+      },
+      wonFighter: {
+        id:
+          typeof data.wonFighter.id === "string"
+            ? parseInt(data.wonFighter.id, 10)
+            : data.wonFighter.id,
+      },
+    }
+  })
 }
 
 export const fetchUserFightResults = async (
@@ -44,9 +59,24 @@ export const fetchUserFightResults = async (
     .orderBy("recordedAt", "desc")
     .limit(first)
   const userResultRefs = await query.get()
-  return userResultRefs.docs.map(
-    snapshot => snapshot.data() as UserFightResultDTO
-  )
+  return userResultRefs.docs.map(snapshot => {
+    const data = snapshot.data() as UserFightResultDTO<string | number>
+    return {
+      ...data,
+      myFighter: {
+        id:
+          typeof data.myFighter.id === "string"
+            ? parseInt(data.myFighter.id, 10)
+            : data.myFighter.id,
+      },
+      rivalFighter: {
+        id:
+          typeof data.rivalFighter.id === "string"
+            ? parseInt(data.rivalFighter.id, 10)
+            : data.rivalFighter.id,
+      },
+    }
+  })
 }
 
 interface RecordFightResultInput
@@ -85,9 +115,3 @@ export const recordFightResult = async (
   await batch.commit()
   return true
 }
-
-const userResultToGlobalResult = (dto: UserFightResultDTO): FightResultDTO => ({
-  lostFighter: dto.won ? dto.rivalFighter : dto.myFighter,
-  recordedAt: dto.recordedAt,
-  wonFighter: dto.won ? dto.myFighter : dto.rivalFighter,
-})
