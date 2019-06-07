@@ -3,6 +3,7 @@ import Container from "@material-ui/core/Container"
 import CssBaseline from "@material-ui/core/CssBaseline"
 import Grid from "@material-ui/core/Grid"
 import IconButton from "@material-ui/core/IconButton"
+import LinearProgress from "@material-ui/core/LinearProgress"
 import Link from "@material-ui/core/Link"
 import { makeStyles } from "@material-ui/core/styles"
 import Toolbar from "@material-ui/core/Toolbar"
@@ -54,7 +55,10 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export const Layout: FC = ({ children }) => {
+export const Layout: FC<{ showProgress?: boolean }> = ({
+  children,
+  showProgress,
+}) => {
   const classes = useStyles()
   const [openDrawer, setOpenDrawer] = useState<boolean>(false)
   const handleDrawerOpen = () => setOpenDrawer(true)
@@ -88,6 +92,11 @@ export const Layout: FC = ({ children }) => {
       <DrawerMenu open={openDrawer} setOpen={setOpenDrawer} />
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
+        <LinearProgress
+          variant="indeterminate"
+          color="secondary"
+          hidden={!showProgress}
+        />
         <Container maxWidth="lg" className={classes.container}>
           <Grid container={true} spacing={3}>
             {children}

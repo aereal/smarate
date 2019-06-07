@@ -3,6 +3,7 @@ import Snackbar from "@material-ui/core/Snackbar"
 import gql from "graphql-tag"
 import React, { FC, useState } from "react"
 import { Mutation, Query } from "react-apollo"
+import { withDelay } from "../async"
 import { FighterSelectUnit } from "../components/fighter-select-unit"
 import { Layout } from "../components/layout"
 import {
@@ -33,17 +34,23 @@ export const mutation = gql`
 
 export const MyPage: FC = () => {
   const [updateResult, setUpdateResult] = useState<
-    "undetermined" | "error" | "completed"
-  >("undetermined")
+    "idle" | "started" | "success" | "error"
+  >("idle")
   const handleChanged = async (callback: () => Promise<void>) => {
-    setUpdateResult("undetermined")
+    setUpdateResult("started")
     try {
       await callback()
-      setUpdateResult("completed")
-    } catch (e) {
-      setUpdateResult("error")
+      setUpdateResult("success")
+      await Promise.all([
+        setUpdateResult("success"),
+        withDelay(() => setUpdateResult("idle"), 5000),
+      ])
+    } catch {
+      await Promise.all([
+        setUpdateResult("error"),
+        withDelay(() => setUpdateResult("idle"), 5000),
+      ])
     }
-    setTimeout(() => setUpdateResult("undetermined"), 5000)
   }
 
   return (
@@ -90,7 +97,7 @@ export const MyPage: FC = () => {
               )}
             </Grid>
           </Grid>
-          <Snackbar open={updateResult === "completed"}>
+          <Snackbar open={updateResult === "success"}>
             <SuccessfulSnackbarContent message="保存しました" />
           </Snackbar>
           <Snackbar open={updateResult === "error"}>

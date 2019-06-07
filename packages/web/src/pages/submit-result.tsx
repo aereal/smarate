@@ -44,13 +44,13 @@ const query = gql`
   }
 `
 
-type SubmitState = "ready" | "started" | "success" | "error"
+type SubmitState = "idle" | "started" | "success" | "error"
 
 export const SubmitResultPage: React.FunctionComponent<{}> = () => {
   const [rivalFighterID, setRivalFighterID] = useState<number>()
   const [myFighterID, setMyFighterID] = useState<number>()
   const [won, setWon] = useState(true)
-  const [submitState, setSubmitState] = useState<SubmitState>("ready")
+  const [submitState, setSubmitState] = useState<SubmitState>("idle")
   const onResultChange = (result: FightResult) => setWon(result === Win)
   const onSubmit = (callback: () => Promise<void>) => async () => {
     setSubmitState("started")
@@ -59,18 +59,18 @@ export const SubmitResultPage: React.FunctionComponent<{}> = () => {
       setRivalFighterID(undefined)
       await Promise.all([
         setSubmitState("success"),
-        withDelay(() => setSubmitState("ready"), 3000),
+        withDelay(() => setSubmitState("idle"), 3000),
       ])
     } catch {
       await Promise.all([
         setSubmitState("error"),
-        withDelay(() => setSubmitState("ready"), 3000),
+        withDelay(() => setSubmitState("idle"), 3000),
       ])
     }
   }
 
   return (
-    <Layout>
+    <Layout showProgress={submitState === "started"}>
       <Grid item={true} xs={12} sm={6}>
         <Query<RecordResultQuery> query={query}>
           {({ data, loading, error }) => {
