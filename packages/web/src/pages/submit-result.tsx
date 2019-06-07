@@ -111,7 +111,9 @@ export const SubmitResultPage: React.FunctionComponent<{}> = () => {
           {recordResult => (
             <SubmitButton
               disabled={
-                rivalFighterID === undefined || myFighterID === undefined
+                submitState === "started" ||
+                rivalFighterID === undefined ||
+                myFighterID === undefined
               }
               onClick={onSubmit(
                 // tslint:disable-next-line:jsx-no-lambda
