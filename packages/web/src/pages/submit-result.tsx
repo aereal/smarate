@@ -3,6 +3,7 @@ import Snackbar from "@material-ui/core/Snackbar"
 import gql from "graphql-tag"
 import React, { useState } from "react"
 import { Mutation, Query } from "react-apollo"
+import { withDelay } from "../async"
 import { ResultSwitch } from "../components//result-switch"
 import { RivalFighterSelector } from "../components//rival-fighter-selector"
 import { Layout } from "../components/layout"
@@ -40,20 +41,29 @@ const query = gql`
   }
 `
 
+type SubmitState = "ready" | "started" | "success" | "error"
+
 export const SubmitResultPage: React.FunctionComponent<{}> = () => {
   const [rivalFighterID, setRivalFighterID] = useState<number>()
   const [myFighterID, setMyFighterID] = useState<number>()
   const [won, setWon] = useState(true)
-  const [completed, setCompleted] = useState(false)
+  const [submitState, setSubmitState] = useState<SubmitState>("ready")
   const onResultChange = (result: FightResult) => setWon(result === Win)
   const onSubmit = (callback: () => Promise<void>) => async () => {
-    setCompleted(false)
-    await callback()
-    setCompleted(true)
-    setRivalFighterID(undefined)
-    setTimeout(() => {
-      setCompleted(false)
-    }, 5000)
+    setSubmitState("started")
+    try {
+      await callback()
+      setRivalFighterID(undefined)
+      await Promise.all([
+        setSubmitState("success"),
+        withDelay(() => setSubmitState("ready"), 3000),
+      ])
+    } catch {
+      await Promise.all([
+        setSubmitState("error"),
+        withDelay(() => setSubmitState("ready"), 3000),
+      ])
+    }
   }
 
   return (
@@ -119,7 +129,7 @@ export const SubmitResultPage: React.FunctionComponent<{}> = () => {
           )}
         </Mutation>
       </Grid>
-      <Snackbar open={completed}>
+      <Snackbar open={submitState === "success"}>
         <SuccessfulSnackbarContent message="Completed" />
       </Snackbar>
     </Layout>
