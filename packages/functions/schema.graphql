@@ -16,7 +16,7 @@ type Mutation {
 type User {
   id: String!
   preference: UserPreference!
-  fightResults(first: Int!): FightResultConnection!
+  fightResults(first: Int!): UserFightResultConnection!
 }
 
 type UserPreference {
@@ -24,7 +24,7 @@ type UserPreference {
 }
 
 type Fighter {
-  id: String!
+  id: Int!
   name: LocalizedName!
 }
 
@@ -36,8 +36,18 @@ type FightResultConnection {
   nodes: [FightResult!]!
 }
 
+type UserFightResultConnection {
+  nodes: [UserFightResult!]!
+}
+
 type FightResult {
   wonFighter: Fighter!
   lostFighter: Fighter!
   recordedAt: String!
+}
+
+type UserFightResult {
+  myFighter: Fighter!
+  rivalFighter: Fighter!
+  won: Boolean!
 }

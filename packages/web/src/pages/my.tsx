@@ -1,11 +1,17 @@
 import Grid from "@material-ui/core/Grid"
+import LinearProgress from "@material-ui/core/LinearProgress"
 import Snackbar from "@material-ui/core/Snackbar"
+import { makeStyles } from "@material-ui/core/styles"
 import gql from "graphql-tag"
 import React, { FC, useState } from "react"
 import { Mutation, Query } from "react-apollo"
 import { withDelay } from "../async"
 import { FighterSelectUnit } from "../components/fighter-select-unit"
 import { Layout } from "../components/layout"
+import {
+  MyFightResultList,
+  myFightResultListFragment,
+} from "../components/my-fight-result-list"
 import {
   ErrorSnackbarContent,
   SuccessfulSnackbarContent,
@@ -22,8 +28,10 @@ export const query = gql`
       preference {
         defaultFighterID
       }
+      ...MyFightResultListFragment
     }
   }
+  ${myFightResultListFragment}
 `
 
 export const mutation = gql`
@@ -32,7 +40,12 @@ export const mutation = gql`
   }
 `
 
+const useStyles = makeStyles(() => ({
+  root: { flexGrow: 1 },
+}))
+
 export const MyPage: FC = () => {
+  const classes = useStyles()
   const [updateResult, setUpdateResult] = useState<
     "idle" | "started" | "success" | "error"
   >("idle")
@@ -57,7 +70,7 @@ export const MyPage: FC = () => {
     <Query<MyPageQuery> query={query}>
       {result => (
         <Layout>
-          <Grid item={true} xs={12} sm={6}>
+          <Grid item={true} xs={12} md={6}>
             <Grid item={true} xs={12} sm={6}>
               {result.error ? (
                 <>error: {JSON.stringify(result.error)}</>
@@ -96,6 +109,24 @@ export const MyPage: FC = () => {
                 <>not authenticated</>
               )}
             </Grid>
+          </Grid>
+          <Grid item={true} xs={12} md={6}>
+            {result.loading ? (
+              <div className={classes.root}>
+                <LinearProgress />
+              </div>
+            ) : (
+              <MyFightResultList
+                __typename="User"
+                fightResults={{
+                  __typename: "UserFightResultConnection",
+                  nodes:
+                    result.error || !(result.data && result.data.visitor)
+                      ? []
+                      : result.data.visitor.fightResults.nodes,
+                }}
+              />
+            )}
           </Grid>
           <Snackbar open={updateResult === "success"}>
             <SuccessfulSnackbarContent message="保存しました" />
