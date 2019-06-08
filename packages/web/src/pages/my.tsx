@@ -1,5 +1,7 @@
 import Grid from "@material-ui/core/Grid"
+import LinearProgress from "@material-ui/core/LinearProgress"
 import Snackbar from "@material-ui/core/Snackbar"
+import { makeStyles } from "@material-ui/core/styles"
 import gql from "graphql-tag"
 import React, { FC, useState } from "react"
 import { Mutation, Query } from "react-apollo"
@@ -38,7 +40,12 @@ export const mutation = gql`
   }
 `
 
+const useStyles = makeStyles(() => ({
+  root: { flexGrow: 1 },
+}))
+
 export const MyPage: FC = () => {
+  const classes = useStyles()
   const [updateResult, setUpdateResult] = useState<
     "idle" | "started" | "success" | "error"
   >("idle")
@@ -104,18 +111,22 @@ export const MyPage: FC = () => {
             </Grid>
           </Grid>
           <Grid item={true} xs={12} md={6}>
-            <MyFightResultList
-              __typename="User"
-              fightResults={{
-                __typename: "UserFightResultConnection",
-                nodes:
-                  result.loading ||
-                  result.error ||
-                  !(result.data && result.data.visitor)
-                    ? []
-                    : result.data.visitor.fightResults.nodes,
-              }}
-            />
+            {result.loading ? (
+              <div className={classes.root}>
+                <LinearProgress />
+              </div>
+            ) : (
+              <MyFightResultList
+                __typename="User"
+                fightResults={{
+                  __typename: "UserFightResultConnection",
+                  nodes:
+                    result.error || !(result.data && result.data.visitor)
+                      ? []
+                      : result.data.visitor.fightResults.nodes,
+                }}
+              />
+            )}
           </Grid>
           <Snackbar open={updateResult === "success"}>
             <SuccessfulSnackbarContent message="保存しました" />
