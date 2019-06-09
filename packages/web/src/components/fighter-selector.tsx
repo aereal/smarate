@@ -31,6 +31,7 @@ export const FighterSelector: React.FunctionComponent<Props> = ({
   return (
     <>
       <Select
+        autoWidth={true}
         disabled={disabled}
         value={
           selectedFighterID === undefined ? voidFighterID : selectedFighterID
