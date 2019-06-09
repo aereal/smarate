@@ -1,5 +1,6 @@
 import green from "@material-ui/core/colors/green"
 import red from "@material-ui/core/colors/red"
+import Link from "@material-ui/core/Link"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemIcon from "@material-ui/core/ListItemIcon"
 import ListItemText from "@material-ui/core/ListItemText"
@@ -9,16 +10,19 @@ import CheckIcon from "@material-ui/icons/Check"
 import CloseIcon from "@material-ui/icons/Close"
 import gql from "graphql-tag"
 import React, { FC } from "react"
+import { routes } from "../routes"
 import { MyFightResultFragment } from "./__generated__/MyFightResultFragment"
 
 export const myFightResultFragment = gql`
   fragment MyFightResultFragment on UserFightResult {
     myFighter {
+      id
       name {
         ja
       }
     }
     rivalFighter {
+      id
       name {
         ja
       }
@@ -57,12 +61,23 @@ export const MyFightResult: FC<MyFightResultFragment> = ({
             <Typography variant="body2" color="textSecondary" component="span">
               {"VS "}
             </Typography>
-            <Typography variant="body1" component="span">
+            <Link
+              variant="body1"
+              color="inherit"
+              {...routes.fighterDetail.link({ fighterID: rivalFighter.id })}
+            >
               {rivalFighter.name.ja}
-            </Typography>
+            </Link>
           </>
         }
-        secondary={myFighter.name.ja}
+        secondary={
+          <Link
+            color="inherit"
+            {...routes.fighterDetail.link({ fighterID: myFighter.id })}
+          >
+            {myFighter.name.ja}
+          </Link>
+        }
       />
     </ListItem>
   )

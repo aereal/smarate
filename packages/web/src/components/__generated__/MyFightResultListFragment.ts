@@ -13,6 +13,7 @@ export interface MyFightResultListFragment_fightResults_nodes_myFighter_name {
 
 export interface MyFightResultListFragment_fightResults_nodes_myFighter {
   __typename: "Fighter";
+  id: number;
   name: MyFightResultListFragment_fightResults_nodes_myFighter_name;
 }
 
@@ -23,6 +24,7 @@ export interface MyFightResultListFragment_fightResults_nodes_rivalFighter_name 
 
 export interface MyFightResultListFragment_fightResults_nodes_rivalFighter {
   __typename: "Fighter";
+  id: number;
   name: MyFightResultListFragment_fightResults_nodes_rivalFighter_name;
 }
 

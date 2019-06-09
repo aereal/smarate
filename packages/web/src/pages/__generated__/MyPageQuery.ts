@@ -18,6 +18,7 @@ export interface MyPageQuery_visitor_fightResults_nodes_myFighter_name {
 
 export interface MyPageQuery_visitor_fightResults_nodes_myFighter {
   __typename: "Fighter";
+  id: number;
   name: MyPageQuery_visitor_fightResults_nodes_myFighter_name;
 }
 
@@ -28,6 +29,7 @@ export interface MyPageQuery_visitor_fightResults_nodes_rivalFighter_name {
 
 export interface MyPageQuery_visitor_fightResults_nodes_rivalFighter {
   __typename: "Fighter";
+  id: number;
   name: MyPageQuery_visitor_fightResults_nodes_rivalFighter_name;
 }
 
