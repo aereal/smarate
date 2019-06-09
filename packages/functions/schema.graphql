@@ -1,7 +1,7 @@
 type Query {
   visitor: User
   fightResults(first: Int!): FightResultConnection!
-  fighter(name: String!): Fighter
+  fighter(id: Int!): Fighter
 }
 
 type Mutation {
