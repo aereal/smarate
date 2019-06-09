@@ -92,8 +92,6 @@ export const MyPage: FC = () => {
                     <FighterSelectUnit
                       label="良く使うファイター"
                       fighterSelectorProps={{
-                        defaultSelectedFighterID: result.data!.visitor!
-                          .preference.defaultFighterID,
                         onChange: fighterID =>
                           handleChanged(async () => {
                             if (fighterID === undefined) {
@@ -101,6 +99,8 @@ export const MyPage: FC = () => {
                             }
                             setPreference({ variables: { fighterID } })
                           }),
+                        selectedFighterID: result.data!.visitor!.preference
+                          .defaultFighterID,
                       }}
                     />
                   )}

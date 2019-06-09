@@ -1,11 +1,11 @@
 import MenuItem from "@material-ui/core/MenuItem"
 import Select from "@material-ui/core/Select"
-import React, { useEffect, useState } from "react"
+import React, { ChangeEvent } from "react"
 import { Fighter, fighters } from "../models/fighter"
 
 export interface Props {
   candidates?: ReadonlyArray<Fighter>
-  defaultSelectedFighterID?: number
+  selectedFighterID?: number
   disabled?: boolean
   onChange?: (selectedFighterID: number | undefined) => void
 }
@@ -14,33 +14,29 @@ const voidFighterID = -1
 
 export const FighterSelector: React.FunctionComponent<Props> = ({
   candidates,
-  defaultSelectedFighterID,
+  selectedFighterID,
   disabled,
   onChange,
 }) => {
-  const [selectedFighterID, updateFighter] = useState(defaultSelectedFighterID)
   const candidateFighters = candidates || fighters
   const isSelected = (fighterID: number): boolean =>
     selectedFighterID === undefined ? false : selectedFighterID === fighterID
-
-  useEffect(() => updateFighter(defaultSelectedFighterID), [
-    defaultSelectedFighterID,
-  ])
+  const handleChange = (ev: ChangeEvent<{ value: unknown }>) => {
+    const fighterID = parseInt(ev.target.value as string)
+    if (onChange !== undefined) {
+      onChange(fighterID)
+    }
+  }
 
   return (
     <>
       <Select
+        autoWidth={true}
         disabled={disabled}
         value={
           selectedFighterID === undefined ? voidFighterID : selectedFighterID
         }
-        onChange={ev => {
-          const fighterID = parseInt(ev.target.value as string)
-          updateFighter(fighterID)
-          if (onChange !== undefined) {
-            onChange(fighterID)
-          }
-        }}
+        onChange={handleChange}
       >
         {selectedFighterID === undefined ? (
           <MenuItem value={voidFighterID}>選んでください</MenuItem>
