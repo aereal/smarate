@@ -21,6 +21,12 @@ interface UserFightResultDTO<ID extends string | number = number> {
   won: boolean
 }
 
+const normalizeFighterDTO = (
+  input: FighterDTO<string | number>
+): FighterDTO<number> => ({
+  id: typeof input.id === "string" ? parseInt(input.id, 10) : input.id,
+})
+
 export const fetchGlobalFightResults = async (
   db: FirebaseFirestore.Firestore,
   first: number
@@ -34,18 +40,8 @@ export const fetchGlobalFightResults = async (
     const data = snapshot.data() as FightResultDTO<string | number>
     return {
       ...data,
-      lostFighter: {
-        id:
-          typeof data.lostFighter.id === "string"
-            ? parseInt(data.lostFighter.id, 10)
-            : data.lostFighter.id,
-      },
-      wonFighter: {
-        id:
-          typeof data.wonFighter.id === "string"
-            ? parseInt(data.wonFighter.id, 10)
-            : data.wonFighter.id,
-      },
+      lostFighter: normalizeFighterDTO(data.lostFighter),
+      wonFighter: normalizeFighterDTO(data.wonFighter),
     }
   })
 }
