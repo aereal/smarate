@@ -1,12 +1,14 @@
 import { AuthenticationContext, getUserFromContext } from "../auth-context"
+import { GetDB } from "../firebase"
 import { recordFightResult, setUserPreference } from "../repo"
 
-export const buildMutationResolver = (db: FirebaseFirestore.Firestore) => ({
+export const buildMutationResolver = (getDB: GetDB) => ({
   recordResult: async (
     _: any,
     args: { myFighterID: number; rivalFighterID: number; won: boolean },
     context: AuthenticationContext
   ) => {
+    const db = getDB()
     const currentUser = await getUserFromContext(context)
     if (currentUser === null) {
       throw new Error("unauthenticated")
@@ -38,6 +40,7 @@ export const buildMutationResolver = (db: FirebaseFirestore.Firestore) => ({
       throw new Error("unauthenticated")
     }
 
+    const db = getDB()
     try {
       return await setUserPreference(db, {
         defaultFighterID: args.defaultFighterID,
