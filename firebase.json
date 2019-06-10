@@ -32,5 +32,9 @@
     "predeploy": [
       "yarn workspace functions build"
     ]
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
   }
 }

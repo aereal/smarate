@@ -1,9 +1,11 @@
 import { AuthenticationContext, getUserFromContext } from "../auth-context"
+import { GetDB } from "../firebase"
 import { Fighter } from "../model"
 import { fetchFighterByNameJa, fetchGlobalFightResults } from "../repo"
 
-export const buildQueryResolver = (db: FirebaseFirestore.Firestore) => ({
+export const buildQueryResolver = (getDB: GetDB) => ({
   fightResults: async (_: any, args: { first: number }) => {
+    const db = getDB()
     try {
       const dtos = await fetchGlobalFightResults(db, args.first)
       const conn = {

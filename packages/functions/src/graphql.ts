@@ -3,7 +3,7 @@ import { readFileSync } from "fs"
 import { parse } from "graphql"
 import { resolve } from "path"
 import { withAuthenticationContext } from "./auth-context"
-import { db } from "./firebase"
+import { getDB } from "./firebase"
 import { buildResolver } from "./resolvers"
 
 const rawSchema = readFileSync(resolve(__dirname, "../schema.graphql"))
@@ -13,7 +13,7 @@ const apollo = new ApolloServer({
   context: withAuthenticationContext,
   introspection: true,
   playground: true,
-  resolvers: buildResolver(db),
+  resolvers: buildResolver(getDB),
   typeDefs,
 })
 
