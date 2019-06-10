@@ -26,10 +26,21 @@ type UserPreference {
 type Fighter {
   id: Int!
   name: LocalizedName!
+  fightResults(first: Int!): FighterFightResultConnection!
 }
 
 type LocalizedName {
   ja: String!
+}
+
+type FighterFightResultConnection {
+  nodes: [FighterFightResult!]!
+}
+
+type FighterFightResult {
+  rivalFighter: Fighter!
+  won: Boolean!
+  recordedAt: String!
 }
 
 type FightResultConnection {

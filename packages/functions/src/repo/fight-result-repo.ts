@@ -21,6 +21,65 @@ interface UserFightResultDTO<ID extends string | number = number> {
   won: boolean
 }
 
+interface FighterFightResult<ID extends string | number = number> {
+  rivalFighter: FighterDTO<ID>
+  recordedAt: Timestamp
+  won: boolean
+}
+
+export const fetchFighterFightResultsByFighterID = async (
+  db: FirebaseFirestore.Firestore,
+  fighterID: number,
+  first: number
+): Promise<FighterFightResult[]> => {
+  const [wonResultRefs, lostResultRefs] = await Promise.all([
+    await fetchResults(db, fighterID, first, true),
+    await fetchResults(db, fighterID, first, false),
+  ])
+  const reducedResultRefs = wonResultRefs.concat(lostResultRefs)
+  reducedResultRefs.sort(
+    (a, b) => (a.recordedAt.toMillis() - b.recordedAt.toMillis()) * -1
+  )
+  return reducedResultRefs.splice(0, first)
+}
+
+const fetchResults = async (
+  db: FirebaseFirestore.Firestore,
+  fighterID: number,
+  first: number,
+  won: boolean
+): Promise<FighterFightResult[]> => {
+  const whereFieldPath = won ? "wonFighter.id" : "lostFighter.id"
+  const query = await db
+    .collection(GLOBAL_RESULTS)
+    .where(whereFieldPath, "==", fighterID)
+    .orderBy("recordedAt", "desc")
+    .limit(first)
+  const resultRefs = await query.get()
+  return resultRefs.docs.map(snapshot =>
+    globalFightResultToFighterFightResult(
+      snapshot.data() as FightResultDTO<string | number>,
+      fighterID
+    )
+  )
+}
+
+const globalFightResultToFighterFightResult = <
+  ID extends string | number = number
+>(
+  from: FightResultDTO<ID>,
+  fighterID: ID
+): FighterFightResult<number> => {
+  const { wonFighter, lostFighter, recordedAt } = from
+  const won = wonFighter.id.toString() === fighterID.toString()
+  const rivalFighter = won ? lostFighter : wonFighter
+  return {
+    recordedAt,
+    rivalFighter: normalizeFighterDTO(rivalFighter),
+    won,
+  }
+}
+
 const normalizeFighterDTO = (
   input: FighterDTO<string | number>
 ): FighterDTO<number> => ({

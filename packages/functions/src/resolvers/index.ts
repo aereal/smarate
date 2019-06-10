@@ -7,7 +7,7 @@ import { buildUserResolver } from "./user"
 
 export const buildResolver = (getDB: GetDB) => ({
   FightResult: buildFightResultResolver(),
-  Fighter: buildFighterResolver(),
+  Fighter: buildFighterResolver(getDB),
   Mutation: buildMutationResolver(getDB),
   Query: buildQueryResolver(getDB),
   User: buildUserResolver(getDB),
