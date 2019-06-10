@@ -35,6 +35,7 @@ type LocalizedName {
 
 type FighterFightResultConnection {
   nodes: [FighterFightResult!]!
+  winRatio: Float!
 }
 
 type FighterFightResult {
