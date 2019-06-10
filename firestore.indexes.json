@@ -1,4 +1,33 @@
 {
-  "indexes": [],
+  "indexes": [
+    {
+      "collectionGroup": "global_results",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "lostFighter.id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "recordedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "global_results",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "wonFighter.id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "recordedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
   "fieldOverrides": []
 }
