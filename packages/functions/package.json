@@ -3,10 +3,11 @@
   "version": "0.0.1",
   "scripts": {
     "build": "tsc",
-    "watch": "tsc -w",
-    "serve": "yarn build && firebase serve --only functions",
-    "shell": "yarn build && firebase functions:shell",
-    "start": "yarn shell",
+    "watch": "tsc -w --preserveWatchOutput",
+    "dev": "npm-run-all -l build -p watch serve",
+    "serve": "env GOOGLE_APPLICATION_CREDENTIALS=../../smarate-14a9a-b69d9361b471.json firebase serve --only functions,firestore",
+    "shell": "env GOOGLE_APPLICATION_CREDENTIALS=../../smarate-14a9a-b69d9361b471.json firebase functions:shell",
+    "start": "npm-run-all -l build -p watch shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
