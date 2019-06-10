@@ -1,4 +1,5 @@
 import { Timestamp } from "@google-cloud/firestore"
+import { FighterFightResult } from "../model"
 
 const GLOBAL_RESULTS = "global_results" as const
 
@@ -16,12 +17,6 @@ interface FightResultDTO<ID extends string | number = number> {
 
 interface UserFightResultDTO<ID extends string | number = number> {
   myFighter: FighterDTO<ID>
-  rivalFighter: FighterDTO<ID>
-  recordedAt: Timestamp
-  won: boolean
-}
-
-interface FighterFightResult<ID extends string | number = number> {
   rivalFighter: FighterDTO<ID>
   recordedAt: Timestamp
   won: boolean
@@ -69,7 +64,7 @@ const globalFightResultToFighterFightResult = <
 >(
   from: FightResultDTO<ID>,
   fighterID: ID
-): FighterFightResult<number> => {
+): FighterFightResult => {
   const { wonFighter, lostFighter, recordedAt } = from
   const won = wonFighter.id.toString() === fighterID.toString()
   const rivalFighter = won ? lostFighter : wonFighter
