@@ -11,9 +11,15 @@ export interface FighterDetailPageQuery_fighter_name {
   ja: string;
 }
 
+export interface FighterDetailPageQuery_fighter_fightResults {
+  __typename: "FighterFightResultConnection";
+  winRatio: number;
+}
+
 export interface FighterDetailPageQuery_fighter {
   __typename: "Fighter";
   name: FighterDetailPageQuery_fighter_name;
+  fightResults: FighterDetailPageQuery_fighter_fightResults;
 }
 
 export interface FighterDetailPageQuery {

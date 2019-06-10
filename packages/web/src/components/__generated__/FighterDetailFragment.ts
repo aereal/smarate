@@ -11,7 +11,13 @@ export interface FighterDetailFragment_name {
   ja: string;
 }
 
+export interface FighterDetailFragment_fightResults {
+  __typename: "FighterFightResultConnection";
+  winRatio: number;
+}
+
 export interface FighterDetailFragment {
   __typename: "Fighter";
   name: FighterDetailFragment_name;
+  fightResults: FighterDetailFragment_fightResults;
 }

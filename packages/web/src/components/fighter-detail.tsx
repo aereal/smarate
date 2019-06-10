@@ -8,9 +8,18 @@ export const fighterDetailFragment = gql`
     name {
       ja
     }
+    fightResults(first: 10) {
+      winRatio
+    }
   }
 `
 
-export const FighterDetail: FC<FighterDetailFragment> = ({ name }) => (
-  <Typography variant="h4">{name.ja}</Typography>
+export const FighterDetail: FC<FighterDetailFragment> = ({
+  name,
+  fightResults: { winRatio },
+}) => (
+  <>
+    <Typography variant="h4">{name.ja}</Typography>
+    <div>{winRatio * 100}%</div>
+  </>
 )
