@@ -6,17 +6,11 @@ import Typography from "@material-ui/core/Typography"
 import gql from "graphql-tag"
 import React, { FC } from "react"
 import { routes } from "../routes"
-import { MyFightResultFragment } from "./__generated__/MyFightResultFragment"
+import { FighterFightResultFragment } from "./__generated__/FighterFightResultFragment"
 import { FightResultIcon } from "./fight-result-icon"
 
-export const myFightResultFragment = gql`
-  fragment MyFightResultFragment on UserFightResult {
-    myFighter {
-      id
-      name {
-        ja
-      }
-    }
+export const fighterFightResultFragment = gql`
+  fragment FighterFightResultFragment on FighterFightResult {
     rivalFighter {
       id
       name {
@@ -27,8 +21,7 @@ export const myFightResultFragment = gql`
   }
 `
 
-export const MyFightResult: FC<MyFightResultFragment> = ({
-  myFighter,
+export const FighterFightResult: FC<FighterFightResultFragment> = ({
   rivalFighter,
   won,
 }) => (
@@ -50,14 +43,6 @@ export const MyFightResult: FC<MyFightResultFragment> = ({
             {rivalFighter.name.ja}
           </Link>
         </>
-      }
-      secondary={
-        <Link
-          color="inherit"
-          {...routes.fighterDetail.link({ fighterID: myFighter.id })}
-        >
-          {myFighter.name.ja}
-        </Link>
       }
     />
   </ListItem>

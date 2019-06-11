@@ -1,7 +1,7 @@
 type Query {
   visitor: User
-  fightResults(first: Int!): FightResultConnection!
-  fighter(name: String!): Fighter
+  fightResults(first: Int!): GlobalFightResultConnection!
+  fighter(id: Int!): Fighter
 }
 
 type Mutation {
@@ -26,27 +26,46 @@ type UserPreference {
 type Fighter {
   id: Int!
   name: LocalizedName!
+  fightResults(first: Int!): FighterFightResultConnection!
 }
 
 type LocalizedName {
   ja: String!
 }
 
-type FightResultConnection {
-  nodes: [FightResult!]!
+type FighterFightResultConnection {
+  nodes: [FighterFightResult!]!
+  winRatio: Float!
+}
+
+type FighterFightResult implements IFightResult {
+  myFighter: Fighter!
+  rivalFighter: Fighter!
+  won: Boolean!
+  recordedAt: String!
+}
+
+type GlobalFightResultConnection {
+  nodes: [GlobalFightResult!]!
 }
 
 type UserFightResultConnection {
   nodes: [UserFightResult!]!
 }
 
-type FightResult {
+type GlobalFightResult {
   wonFighter: Fighter!
   lostFighter: Fighter!
   recordedAt: String!
 }
 
-type UserFightResult {
+type UserFightResult implements IFightResult {
+  myFighter: Fighter!
+  rivalFighter: Fighter!
+  won: Boolean!
+}
+
+interface IFightResult {
   myFighter: Fighter!
   rivalFighter: Fighter!
   won: Boolean!

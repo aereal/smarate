@@ -1,7 +1,7 @@
 import { AuthenticationContext, getUserFromContext } from "../auth-context"
 import { GetDB } from "../firebase"
 import { Fighter } from "../model"
-import { fetchFighterByNameJa, fetchGlobalFightResults } from "../repo"
+import { fetchFighterByID, fetchGlobalFightResults } from "../repo"
 
 export const buildQueryResolver = (getDB: GetDB) => ({
   fightResults: async (_: any, args: { first: number }) => {
@@ -19,10 +19,8 @@ export const buildQueryResolver = (getDB: GetDB) => ({
       throw e
     }
   },
-  fighter: async (
-    _: any,
-    args: { name: string }
-  ): Promise<Fighter | undefined> => fetchFighterByNameJa(args.name),
+  fighter: async (_: any, args: { id: number }): Promise<Fighter | undefined> =>
+    await fetchFighterByID(args.id),
   visitor: async (parent: any, args: any, context: AuthenticationContext) =>
     getUserFromContext(context),
 })
