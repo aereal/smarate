@@ -11,9 +11,27 @@ export interface FighterDetailPageQuery_fighter_name {
   ja: string;
 }
 
+export interface FighterDetailPageQuery_fighter_fightResults_nodes_rivalFighter_name {
+  __typename: "LocalizedName";
+  ja: string;
+}
+
+export interface FighterDetailPageQuery_fighter_fightResults_nodes_rivalFighter {
+  __typename: "Fighter";
+  id: number;
+  name: FighterDetailPageQuery_fighter_fightResults_nodes_rivalFighter_name;
+}
+
+export interface FighterDetailPageQuery_fighter_fightResults_nodes {
+  __typename: "FighterFightResult";
+  rivalFighter: FighterDetailPageQuery_fighter_fightResults_nodes_rivalFighter;
+  won: boolean;
+}
+
 export interface FighterDetailPageQuery_fighter_fightResults {
   __typename: "FighterFightResultConnection";
   winRatio: number;
+  nodes: FighterDetailPageQuery_fighter_fightResults_nodes[];
 }
 
 export interface FighterDetailPageQuery_fighter {
