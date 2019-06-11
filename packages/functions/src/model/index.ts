@@ -16,6 +16,7 @@ export interface FightResult {
 }
 
 export interface FighterFightResult {
+  myFighter: { id: number }
   rivalFighter: { id: number }
   recordedAt: Timestamp
   won: boolean

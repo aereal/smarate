@@ -67,8 +67,10 @@ const globalFightResultToFighterFightResult = <
 ): FighterFightResult => {
   const { wonFighter, lostFighter, recordedAt } = from
   const won = wonFighter.id.toString() === fighterID.toString()
+  const myFighter = won ? wonFighter : lostFighter
   const rivalFighter = won ? lostFighter : wonFighter
   return {
+    myFighter: normalizeFighterDTO(myFighter),
     recordedAt,
     rivalFighter: normalizeFighterDTO(rivalFighter),
     won,

@@ -38,7 +38,8 @@ type FighterFightResultConnection {
   winRatio: Float!
 }
 
-type FighterFightResult {
+type FighterFightResult implements IFightResult {
+  myFighter: Fighter!
   rivalFighter: Fighter!
   won: Boolean!
   recordedAt: String!
@@ -58,7 +59,13 @@ type FightResult {
   recordedAt: String!
 }
 
-type UserFightResult {
+type UserFightResult implements IFightResult {
+  myFighter: Fighter!
+  rivalFighter: Fighter!
+  won: Boolean!
+}
+
+interface IFightResult {
   myFighter: Fighter!
   rivalFighter: Fighter!
   won: Boolean!
