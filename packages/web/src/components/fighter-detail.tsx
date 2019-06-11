@@ -20,6 +20,6 @@ export const FighterDetail: FC<FighterDetailFragment> = ({
 }) => (
   <>
     <Typography variant="h4">{name.ja}</Typography>
-    <div>{winRatio * 100}%</div>
+    <Typography variant="body1">最近の勝率: {winRatio * 100}%</Typography>
   </>
 )
