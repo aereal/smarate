@@ -1,6 +1,6 @@
 type Query {
   visitor: User
-  fightResults(first: Int!): FightResultConnection!
+  fightResults(first: Int!): GlobalFightResultConnection!
   fighter(id: Int!): Fighter
 }
 
@@ -45,15 +45,15 @@ type FighterFightResult implements IFightResult {
   recordedAt: String!
 }
 
-type FightResultConnection {
-  nodes: [FightResult!]!
+type GlobalFightResultConnection {
+  nodes: [GlobalFightResult!]!
 }
 
 type UserFightResultConnection {
   nodes: [UserFightResult!]!
 }
 
-type FightResult {
+type GlobalFightResult {
   wonFighter: Fighter!
   lostFighter: Fighter!
   recordedAt: String!

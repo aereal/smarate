@@ -1,5 +1,5 @@
 import { FightResult } from "../model"
 
-export const buildFightResultResolver = () => ({
+export const buildGlobalFightResultResolver = () => ({
   recordedAt: (parent: FightResult) => parent.recordedAt.toISOString(),
 })

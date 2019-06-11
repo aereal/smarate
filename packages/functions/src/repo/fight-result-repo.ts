@@ -9,7 +9,7 @@ interface FighterDTO<ID extends string | number> {
   id: ID
 }
 
-interface FightResultDTO<ID extends string | number = number> {
+interface GlobalFightResultDTO<ID extends string | number = number> {
   lostFighter: FighterDTO<ID>
   wonFighter: FighterDTO<ID>
   recordedAt: Timestamp
@@ -53,7 +53,7 @@ const fetchResults = async (
   const resultRefs = await query.get()
   return resultRefs.docs.map(snapshot =>
     globalFightResultToFighterFightResult(
-      snapshot.data() as FightResultDTO<string | number>,
+      snapshot.data() as GlobalFightResultDTO<string | number>,
       fighterID
     )
   )
@@ -62,7 +62,7 @@ const fetchResults = async (
 const globalFightResultToFighterFightResult = <
   ID extends string | number = number
 >(
-  from: FightResultDTO<ID>,
+  from: GlobalFightResultDTO<ID>,
   fighterID: ID
 ): FighterFightResult => {
   const { wonFighter, lostFighter, recordedAt } = from
@@ -86,14 +86,14 @@ const normalizeFighterDTO = (
 export const fetchGlobalFightResults = async (
   db: FirebaseFirestore.Firestore,
   first: number
-): Promise<FightResultDTO[]> => {
+): Promise<GlobalFightResultDTO[]> => {
   const query = await db
     .collection(GLOBAL_RESULTS)
     .orderBy("recordedAt", "desc")
     .limit(first)
   const globalResultRefs = await query.get()
   return globalResultRefs.docs.map(snapshot => {
-    const data = snapshot.data() as FightResultDTO<string | number>
+    const data = snapshot.data() as GlobalFightResultDTO<string | number>
     return {
       ...data,
       lostFighter: normalizeFighterDTO(data.lostFighter),
