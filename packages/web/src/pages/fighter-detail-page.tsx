@@ -1,4 +1,5 @@
 import Grid from "@material-ui/core/Grid"
+import LinearProgress from "@material-ui/core/LinearProgress"
 import gql from "graphql-tag"
 import React, { FC } from "react"
 import { Query } from "react-apollo"
@@ -8,8 +9,6 @@ import {
   fighterDetailFragment,
 } from "../components/fighter-detail"
 import { Layout } from "../components/layout"
-import { OnError } from "../components/on-error"
-import { OnLoading } from "../components/on-loading"
 import { WithData } from "../components/with-data"
 import { routes } from "../routes"
 import {
@@ -37,23 +36,21 @@ export const FighterDetailPage: FC<Props> = ({ route: { params } }) => (
         query={query}
         variables={{ fighterID: params.fighterID }}
       >
-        {result => (
-          <>
-            <OnLoading loading={result.loading}>{() => null}</OnLoading>
-            <OnError error={result.error}>
-              {error => <>! error: {JSON.stringify(error)}</>}
-            </OnError>
-            <WithData data={result.data}>
-              {({ data }) =>
-                data.fighter === null ? (
-                  <>404</>
-                ) : (
-                  <FighterDetail {...data.fighter} />
-                )
+        {({ error, loading, data }) => {
+          if (error) {
+            return <>!error: {JSON.stringify(error)}</>
+          }
+          if (loading) {
+            return <LinearProgress />
+          }
+          return (
+            <WithData data={data}>
+              {({ data: { fighter } }) =>
+                fighter === null ? <>404</> : <FighterDetail {...fighter} />
               }
             </WithData>
-          </>
-        )}
+          )
+        }}
       </Query>
     </Grid>
   </Layout>
