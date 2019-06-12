@@ -105,6 +105,7 @@ export const SubmitResultPage: React.FunctionComponent<{}> = () => {
         <RivalFighterSelector
           fighterSelectorProps={{
             onChange: id => setRivalFighterID(id),
+            selectedFighterID: rivalFighterID,
           }}
         />
       </Grid>
