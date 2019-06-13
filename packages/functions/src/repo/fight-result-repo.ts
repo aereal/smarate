@@ -26,11 +26,12 @@ export const fetchFighterFightResultsByFighterID = async (
   db: FirebaseFirestore.Firestore,
   fighterID: number,
   first: number,
-  startsAt: Date | null
+  startsAt: Date | null,
+  endsAt: Date | null
 ): Promise<FighterFightResult[]> => {
   const [wonResultRefs, lostResultRefs] = await Promise.all([
-    await fetchResults(db, fighterID, first, true, startsAt),
-    await fetchResults(db, fighterID, first, false, startsAt),
+    await fetchResults(db, fighterID, first, true, startsAt, endsAt),
+    await fetchResults(db, fighterID, first, false, startsAt, endsAt),
   ])
   const reducedResultRefs = wonResultRefs.concat(lostResultRefs)
   reducedResultRefs.sort(
@@ -44,7 +45,8 @@ const fetchResults = async (
   fighterID: number,
   first: number,
   won: boolean,
-  startsAt: Date | null
+  startsAt: Date | null,
+  endsAt: Date | null
 ): Promise<FighterFightResult[]> => {
   const whereFieldPath = won ? "wonFighter.id" : "lostFighter.id"
   let query = await db
@@ -54,6 +56,9 @@ const fetchResults = async (
     .limit(first)
   if (startsAt !== null) {
     query = query.where("recordedAt", ">", Timestamp.fromDate(startsAt))
+  }
+  if (endsAt !== null) {
+    query = query.where("recordedAt", "<=", Timestamp.fromDate(endsAt))
   }
   const resultRefs = await query.get()
   return resultRefs.docs.map(snapshot =>

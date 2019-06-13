@@ -26,7 +26,7 @@ type UserPreference {
 type Fighter {
   id: Int!
   name: LocalizedName!
-  fightResults(first: Int!, startsAt: DateTime): FighterFightResultConnection!
+  fightResults(first: Int!, startsAt: DateTime, endsAt: DateTime): FighterFightResultConnection!
 }
 
 type LocalizedName {
