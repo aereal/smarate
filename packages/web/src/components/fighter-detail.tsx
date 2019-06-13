@@ -12,7 +12,7 @@ export const fighterDetailFragment = gql`
     name {
       ja
     }
-    fightResults(first: 10) {
+    fightResults(first: $fightResultsCount) {
       winRatio
     }
     ...FighterFightResultListFragment

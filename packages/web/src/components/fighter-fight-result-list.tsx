@@ -10,7 +10,7 @@ import {
 
 export const fighterFightResultListFragment = gql`
   fragment FighterFightResultListFragment on Fighter {
-    fightResults(first: 10) {
+    fightResults(first: $fightResultsCount) {
       nodes {
         ...FighterFightResultFragment
       }

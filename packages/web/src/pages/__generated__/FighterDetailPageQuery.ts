@@ -46,4 +46,5 @@ export interface FighterDetailPageQuery {
 
 export interface FighterDetailPageQueryVariables {
   fighterID: number;
+  fightResultsCount: number;
 }
