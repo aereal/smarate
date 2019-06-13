@@ -1,7 +1,7 @@
 import Grid from "@material-ui/core/Grid"
 import LinearProgress from "@material-ui/core/LinearProgress"
 import gql from "graphql-tag"
-import React, { FC } from "react"
+import React, { FC, useState } from "react"
 import { Query } from "react-apollo"
 import { Route } from "type-route"
 import {
@@ -29,29 +29,46 @@ const query = gql`
   ${fighterDetailFragment}
 `
 
-export const FighterDetailPage: FC<Props> = ({ route: { params } }) => (
-  <Layout>
-    <Grid item={true} xs={12}>
-      <Query<FighterDetailPageQuery, FighterDetailPageQueryVariables>
-        query={query}
-        variables={{ fighterID: params.fighterID, fightResultsCount: 10 }}
-      >
-        {({ error, loading, data }) => {
-          if (error) {
-            return <>!error: {JSON.stringify(error)}</>
-          }
-          if (loading) {
-            return <LinearProgress />
-          }
-          return (
-            <WithData data={data}>
-              {({ data: { fighter } }) =>
-                fighter === null ? <>404</> : <FighterDetail {...fighter} />
-              }
-            </WithData>
-          )
-        }}
-      </Query>
-    </Grid>
-  </Layout>
-)
+export const FighterDetailPage: FC<Props> = ({ route: { params } }) => {
+  const [startsAt, setStartsAt] = useState<Date | null>(null)
+  const [endsAt, setEndsAt] = useState<Date>(new Date())
+
+  return (
+    <Layout>
+      <Grid item={true} xs={12}>
+        <Query<FighterDetailPageQuery, FighterDetailPageQueryVariables>
+          query={query}
+          variables={{ fighterID: params.fighterID, fightResultsCount: 10 }}
+        >
+          {({ error, loading, data }) => {
+            if (error) {
+              return <>!error: {JSON.stringify(error)}</>
+            }
+            if (loading) {
+              return <LinearProgress />
+            }
+            return (
+              <WithData data={data}>
+                {({ data: { fighter } }) =>
+                  fighter === null ? (
+                    <>404</>
+                  ) : (
+                    <FighterDetail
+                      fighter={fighter}
+                      resultRangeInputProps={{
+                        endsAt,
+                        setEndsAt,
+                        setStartsAt,
+                        startsAt,
+                      }}
+                    />
+                  )
+                }
+              </WithData>
+            )
+          }}
+        </Query>
+      </Grid>
+    </Layout>
+  )
+}
