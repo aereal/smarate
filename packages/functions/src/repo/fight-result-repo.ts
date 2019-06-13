@@ -26,8 +26,8 @@ export const fetchFighterFightResultsByFighterID = async (
   db: FirebaseFirestore.Firestore,
   fighterID: number,
   first: number,
-  startsAt: Date | null,
-  endsAt: Date | null
+  startsAt?: Date | null,
+  endsAt?: Date | null
 ): Promise<FighterFightResult[]> => {
   const [wonResultRefs, lostResultRefs] = await Promise.all([
     await fetchResults(db, fighterID, first, true, startsAt, endsAt),
@@ -45,8 +45,8 @@ const fetchResults = async (
   fighterID: number,
   first: number,
   won: boolean,
-  startsAt: Date | null,
-  endsAt: Date | null
+  startsAt?: Date | null,
+  endsAt?: Date | null
 ): Promise<FighterFightResult[]> => {
   const whereFieldPath = won ? "wonFighter.id" : "lostFighter.id"
   let query = await db
@@ -54,10 +54,10 @@ const fetchResults = async (
     .where(whereFieldPath, "==", fighterID)
     .orderBy("recordedAt", "desc")
     .limit(first)
-  if (startsAt !== null) {
+  if (startsAt !== null && startsAt !== undefined) {
     query = query.where("recordedAt", ">", Timestamp.fromDate(startsAt))
   }
-  if (endsAt !== null) {
+  if (endsAt !== null && endsAt !== undefined) {
     query = query.where("recordedAt", "<=", Timestamp.fromDate(endsAt))
   }
   const resultRefs = await query.get()

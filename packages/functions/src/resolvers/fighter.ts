@@ -4,7 +4,7 @@ import { fetchFighterByID, fetchFighterFightResultsByFighterID } from "../repo"
 export const buildFighterResolver = (getDB: GetDB) => ({
   fightResults: async (
     parent: { id: number },
-    args: { first: number; startsAt: Date | null; endsAt: Date | null }
+    args: { first: number; startsAt?: Date | null; endsAt?: Date | null }
   ) => {
     const db = getDB()
     const results = await fetchFighterFightResultsByFighterID(
