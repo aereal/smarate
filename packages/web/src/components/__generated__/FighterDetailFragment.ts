@@ -11,27 +11,31 @@ export interface FighterDetailFragment_name {
   ja: string;
 }
 
-export interface FighterDetailFragment_fightResults_nodes_rivalFighter_name {
+export interface FighterDetailFragment_fightResults_mostWonFighters_nodes_rivalFighter_name {
   __typename: "LocalizedName";
   ja: string;
 }
 
-export interface FighterDetailFragment_fightResults_nodes_rivalFighter {
+export interface FighterDetailFragment_fightResults_mostWonFighters_nodes_rivalFighter {
   __typename: "Fighter";
+  name: FighterDetailFragment_fightResults_mostWonFighters_nodes_rivalFighter_name;
   id: number;
-  name: FighterDetailFragment_fightResults_nodes_rivalFighter_name;
 }
 
-export interface FighterDetailFragment_fightResults_nodes {
-  __typename: "FighterFightResult";
-  rivalFighter: FighterDetailFragment_fightResults_nodes_rivalFighter;
-  won: boolean;
+export interface FighterDetailFragment_fightResults_mostWonFighters_nodes {
+  __typename: "Matchup";
+  rivalFighter: FighterDetailFragment_fightResults_mostWonFighters_nodes_rivalFighter;
+}
+
+export interface FighterDetailFragment_fightResults_mostWonFighters {
+  __typename: "MatchupConnection";
+  nodes: FighterDetailFragment_fightResults_mostWonFighters_nodes[];
 }
 
 export interface FighterDetailFragment_fightResults {
   __typename: "FighterFightResultConnection";
   winRatio: number;
-  nodes: FighterDetailFragment_fightResults_nodes[];
+  mostWonFighters: FighterDetailFragment_fightResults_mostWonFighters;
 }
 
 export interface FighterDetailFragment {

@@ -11,27 +11,31 @@ export interface FighterDetailPageQuery_fighter_name {
   ja: string;
 }
 
-export interface FighterDetailPageQuery_fighter_fightResults_nodes_rivalFighter_name {
+export interface FighterDetailPageQuery_fighter_fightResults_mostWonFighters_nodes_rivalFighter_name {
   __typename: "LocalizedName";
   ja: string;
 }
 
-export interface FighterDetailPageQuery_fighter_fightResults_nodes_rivalFighter {
+export interface FighterDetailPageQuery_fighter_fightResults_mostWonFighters_nodes_rivalFighter {
   __typename: "Fighter";
+  name: FighterDetailPageQuery_fighter_fightResults_mostWonFighters_nodes_rivalFighter_name;
   id: number;
-  name: FighterDetailPageQuery_fighter_fightResults_nodes_rivalFighter_name;
 }
 
-export interface FighterDetailPageQuery_fighter_fightResults_nodes {
-  __typename: "FighterFightResult";
-  rivalFighter: FighterDetailPageQuery_fighter_fightResults_nodes_rivalFighter;
-  won: boolean;
+export interface FighterDetailPageQuery_fighter_fightResults_mostWonFighters_nodes {
+  __typename: "Matchup";
+  rivalFighter: FighterDetailPageQuery_fighter_fightResults_mostWonFighters_nodes_rivalFighter;
+}
+
+export interface FighterDetailPageQuery_fighter_fightResults_mostWonFighters {
+  __typename: "MatchupConnection";
+  nodes: FighterDetailPageQuery_fighter_fightResults_mostWonFighters_nodes[];
 }
 
 export interface FighterDetailPageQuery_fighter_fightResults {
   __typename: "FighterFightResultConnection";
   winRatio: number;
-  nodes: FighterDetailPageQuery_fighter_fightResults_nodes[];
+  mostWonFighters: FighterDetailPageQuery_fighter_fightResults_mostWonFighters;
 }
 
 export interface FighterDetailPageQuery_fighter {
@@ -46,4 +50,5 @@ export interface FighterDetailPageQuery {
 
 export interface FighterDetailPageQueryVariables {
   fighterID: number;
+  fightResultsCount: number;
 }

@@ -8,9 +8,13 @@
     "packages/*"
   ],
   "scripts": {
-    "start": "yarn workspace web start"
+    "start": "yarn workspace web start",
+    "test": "run-p -n test:*",
+    "test:web": "yarn workspace web test",
+    "test:functions": "yarn workspace functions test"
   },
   "devDependencies": {
-    "firebase-tools": "^6.10.0"
+    "firebase-tools": "^6.10.0",
+    "npm-run-all": "^4.1.5"
   }
 }

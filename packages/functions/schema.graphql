@@ -36,6 +36,7 @@ type LocalizedName {
 type FighterFightResultConnection {
   nodes: [FighterFightResult!]!
   winRatio: Float!
+  mostWonFighters: MatchupConnection!
 }
 
 type FighterFightResult implements IFightResult {
@@ -43,6 +44,15 @@ type FighterFightResult implements IFightResult {
   rivalFighter: Fighter!
   won: Boolean!
   recordedAt: String!
+}
+
+type Matchup {
+  rivalFighter: Fighter!
+  winRatio: Float!
+}
+
+type MatchupConnection {
+  nodes: [Matchup!]!
 }
 
 type GlobalFightResultConnection {

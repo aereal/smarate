@@ -9,7 +9,8 @@
     "shell": "env GOOGLE_APPLICATION_CREDENTIALS=../../smarate-14a9a-b69d9361b471.json firebase functions:shell",
     "start": "npm-run-all -l build -p watch shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "logs": "firebase functions:log",
+    "test": "jest"
   },
   "main": "lib/index.js",
   "dependencies": {
@@ -23,8 +24,11 @@
   "devDependencies": {
     "@types/express": "^4.16.1",
     "@types/graphql": "^14.2.0",
+    "@types/jest": "24.0.11",
     "firebase-functions-test": "^0.1.6",
+    "jest": "24.7.1",
     "npm-run-all": "^4.1.5",
+    "ts-jest": "^24.0.2",
     "tslint": "^5.15.0",
     "typescript": "3.4.3"
   },
@@ -34,5 +38,17 @@
   },
   "resolutions": {
     "graphql": "14.2.1"
+  },
+  "jest": {
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
+    "moduleFileExtensions": [
+      "ts", "tsx", "js", "jsx"
+    ]
   }
 }

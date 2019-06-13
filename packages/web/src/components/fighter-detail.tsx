@@ -1,23 +1,20 @@
 import Typography from "@material-ui/core/Typography"
 import gql from "graphql-tag"
 import React, { FC } from "react"
-import {
-  FighterFightResultList,
-  fighterFightResultListFragment,
-} from "../components/fighter-fight-result-list"
 import { FighterDetailFragment } from "./__generated__/FighterDetailFragment"
+import { MatchupRateList, matchupRateListFragment } from "./matchup-rate-list"
 
 export const fighterDetailFragment = gql`
   fragment FighterDetailFragment on Fighter {
     name {
       ja
     }
-    fightResults(first: 10) {
+    fightResults(first: $fightResultsCount) {
       winRatio
+      ...MatchupRateListFragment
     }
-    ...FighterFightResultListFragment
   }
-  ${fighterFightResultListFragment}
+  ${matchupRateListFragment}
 `
 
 export const FighterDetail: FC<FighterDetailFragment> = ({
@@ -29,6 +26,6 @@ export const FighterDetail: FC<FighterDetailFragment> = ({
     <Typography variant="body1">
       最近の勝率: {fightResults.winRatio * 100}%
     </Typography>
-    <FighterFightResultList __typename="Fighter" fightResults={fightResults} />
+    <MatchupRateList {...fightResults} />
   </>
 )
