@@ -25,11 +25,12 @@ interface UserFightResultDTO<ID extends string | number = number> {
 export const fetchFighterFightResultsByFighterID = async (
   db: FirebaseFirestore.Firestore,
   fighterID: number,
-  first: number
+  first: number,
+  startsAt: Date | null
 ): Promise<FighterFightResult[]> => {
   const [wonResultRefs, lostResultRefs] = await Promise.all([
-    await fetchResults(db, fighterID, first, true),
-    await fetchResults(db, fighterID, first, false),
+    await fetchResults(db, fighterID, first, true, startsAt),
+    await fetchResults(db, fighterID, first, false, startsAt),
   ])
   const reducedResultRefs = wonResultRefs.concat(lostResultRefs)
   reducedResultRefs.sort(
@@ -42,14 +43,18 @@ const fetchResults = async (
   db: FirebaseFirestore.Firestore,
   fighterID: number,
   first: number,
-  won: boolean
+  won: boolean,
+  startsAt: Date | null
 ): Promise<FighterFightResult[]> => {
   const whereFieldPath = won ? "wonFighter.id" : "lostFighter.id"
-  const query = await db
+  let query = await db
     .collection(GLOBAL_RESULTS)
     .where(whereFieldPath, "==", fighterID)
     .orderBy("recordedAt", "desc")
     .limit(first)
+  if (startsAt !== null) {
+    query = query.where("recordedAt", ">", Timestamp.fromDate(startsAt))
+  }
   const resultRefs = await query.get()
   return resultRefs.docs.map(snapshot =>
     globalFightResultToFighterFightResult(
