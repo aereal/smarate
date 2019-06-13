@@ -13,7 +13,11 @@ export const fighterDetailFragment = gql`
     name {
       ja
     }
-    fightResults(first: $fightResultsCount) {
+    fightResults(
+      first: $fightResultsCount
+      startsAt: $startsAt
+      endsAt: $endsAt
+    ) {
       winRatio
       ...MatchupRateListFragment
     }

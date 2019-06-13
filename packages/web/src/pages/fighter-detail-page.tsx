@@ -21,7 +21,12 @@ interface Props {
 }
 
 const query = gql`
-  query FighterDetailPageQuery($fighterID: Int!, $fightResultsCount: Int!) {
+  query FighterDetailPageQuery(
+    $fighterID: Int!
+    $fightResultsCount: Int!
+    $startsAt: DateTime
+    $endsAt: DateTime!
+  ) {
     fighter(id: $fighterID) {
       ...FighterDetailFragment
     }
@@ -38,7 +43,12 @@ export const FighterDetailPage: FC<Props> = ({ route: { params } }) => {
       <Grid item={true} xs={12}>
         <Query<FighterDetailPageQuery, FighterDetailPageQueryVariables>
           query={query}
-          variables={{ fighterID: params.fighterID, fightResultsCount: 10 }}
+          variables={{
+            endsAt,
+            fightResultsCount: 10,
+            fighterID: params.fighterID,
+            startsAt,
+          }}
         >
           {({ error, loading, data }) => {
             if (error) {
