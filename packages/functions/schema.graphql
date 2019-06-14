@@ -26,7 +26,7 @@ type UserPreference {
 type Fighter {
   id: Int!
   name: LocalizedName!
-  fightResults(first: Int!): FighterFightResultConnection!
+  fightResults(first: Int!, startsAt: DateTime, endsAt: DateTime): FighterFightResultConnection!
 }
 
 type LocalizedName {
@@ -43,7 +43,7 @@ type FighterFightResult implements IFightResult {
   myFighter: Fighter!
   rivalFighter: Fighter!
   won: Boolean!
-  recordedAt: String!
+  recordedAt: DateTime!
 }
 
 type Matchup {
@@ -66,7 +66,7 @@ type UserFightResultConnection {
 type GlobalFightResult {
   wonFighter: Fighter!
   lostFighter: Fighter!
-  recordedAt: String!
+  recordedAt: DateTime!
 }
 
 type UserFightResult implements IFightResult {
@@ -80,3 +80,5 @@ interface IFightResult {
   rivalFighter: Fighter!
   won: Boolean!
 }
+
+scalar DateTime

@@ -1,3 +1,6 @@
+import DateFnsUtils from "@date-io/date-fns"
+import { MuiPickersUtilsProvider } from "@material-ui/pickers"
+import jaLocale from "date-fns/locale/ja"
 import React, { FunctionComponent, useEffect, useState } from "react"
 import { Route } from "type-route"
 import { AuthenApolloProvider } from "./contexts/authen-apollo"
@@ -37,7 +40,9 @@ export const App: FunctionComponent<{}> = () => {
       <CurrentUserIdTokenProvider>
         <AuthenApolloProvider>
           <CustomizedThemeProvider>
-            <Page route={route} />
+            <MuiPickersUtilsProvider utils={DateFnsUtils} locale={jaLocale}>
+              <Page route={route} />
+            </MuiPickersUtilsProvider>
           </CustomizedThemeProvider>
         </AuthenApolloProvider>
       </CurrentUserIdTokenProvider>
