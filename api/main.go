@@ -24,12 +24,6 @@ func main() {
 }
 
 func run() error {
-	exporter, err := stackdriver.NewExporter(stackdriver.Options{})
-	if err != nil {
-		return err
-	}
-	trace.RegisterExporter(exporter)
-
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -37,6 +31,13 @@ func run() error {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
+	exporter, err := stackdriver.NewExporter(stackdriver.Options{Context: ctx})
+	if err != nil {
+		return err
+	}
+	defer exporter.Flush()
+	trace.RegisterExporter(exporter)
 
 	w, err := InitializeWeb(ctx)
 	if err != nil {
