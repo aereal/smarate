@@ -5,7 +5,7 @@ module.exports = {
       'src/**/*.{tsx,ts}',
     ],
     service: {
-      localSchemaFile: '../functions/schema.graphql'
+      localSchemaFile: '../../api/schema.graphql'
     },
   },
 };
