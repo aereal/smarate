@@ -123,5 +123,6 @@ func (r *userResolver) Preference(ctx context.Context, user *model.User) (*model
 }
 
 func (r *userResolver) FightResults(ctx context.Context, user *model.User, first int) (*dto.UserFightResultConnection, error) {
-	return nil, nil // TODO
+	conn := &dto.UserFightResultConnection{}
+	return conn, nil // TODO
 }
