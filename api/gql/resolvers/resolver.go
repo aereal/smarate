@@ -41,8 +41,18 @@ func (r *Resolver) User() handler1.UserResolver {
 
 type mutationResolver struct{ *Resolver }
 
-func (r *mutationResolver) RecordResult(ctx context.Context, a int, b int, c bool) (bool, error) {
-	return true, nil // TODO
+func (r *mutationResolver) RecordResult(ctx context.Context, myFighterID int, rivalFighterID int, won bool) (bool, error) {
+	token := auth.GetToken(ctx)
+	if token == nil {
+		return false, fmt.Errorf("authentication failed")
+	}
+	visitor, err := r.repo.FindUserFromToken(ctx, token)
+	if err != nil {
+		return false, err
+	}
+	myFighter := &model.Fighter{ID: myFighterID}
+	rivalFighter := &model.Fighter{ID: rivalFighterID}
+	return r.repo.RecordFightResult(ctx, visitor, myFighter, rivalFighter, won)
 }
 
 func (r *mutationResolver) SetPreference(ctx context.Context, defaultFighterID *int) (bool, error) {

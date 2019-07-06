@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"time"
 
 	"cloud.google.com/go/firestore"
 	"firebase.google.com/go/auth"
@@ -111,6 +112,40 @@ func (r *Repo) UpdateUserPreference(ctx context.Context, user *model.User, pref 
 		return err
 	}
 	return nil
+}
+
+func (r *Repo) RecordFightResult(ctx context.Context, user *model.User, myFighter *model.Fighter, rivalFighter *model.Fighter, won bool) (bool, error) {
+	wonFighter := myFighter
+	lostFighter := rivalFighter
+	if !won {
+		wonFighter = rivalFighter
+		lostFighter = myFighter
+	}
+
+	recordedAt := time.Now()
+	batch := r.firestore.Batch()
+
+	globalResultRef := r.firestore.Collection("global_results").NewDoc()
+	globalResult := &model.GlobalFightResult{
+		RecordedAt:  recordedAt,
+		WonFighter:  wonFighter,
+		LostFighter: lostFighter,
+	}
+	batch.Set(globalResultRef, globalResult)
+
+	userResultRef := r.firestore.Collection("user_results").NewDoc()
+	batch.Set(userResultRef, &model.UserFightResult{
+		RecordedAt:   recordedAt,
+		MyFighter:    myFighter,
+		RivalFighter: rivalFighter,
+	})
+
+	_, err := batch.Commit(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 func (r *Repo) FindFighterName(ctx context.Context, fighterID int) (*model.LocalizedName, error) {
