@@ -41,5 +41,5 @@ func (w *Web) Handler() http.Handler {
 }
 
 func (w *Web) Close() error {
-	return nil
+	return w.firestoreClient.Close()
 }
