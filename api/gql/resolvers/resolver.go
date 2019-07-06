@@ -46,7 +46,22 @@ func (r *mutationResolver) RecordResult(ctx context.Context, a int, b int, c boo
 }
 
 func (r *mutationResolver) SetPreference(ctx context.Context, defaultFighterID *int) (bool, error) {
-	return true, nil // TODO
+	token := auth.GetToken(ctx)
+	if token == nil {
+		return false, fmt.Errorf("authentication failed")
+	}
+	visitor, err := r.repo.FindUserFromToken(ctx, token)
+	if err != nil {
+		return false, err
+	}
+	var pref *model.UserPreference
+	if defaultFighterID != nil {
+		pref = &model.UserPreference{DefaultFighterID: *defaultFighterID}
+	}
+	if err := r.repo.UpdateUserPreference(ctx, visitor, pref); err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 type queryResolver struct{ *Resolver }

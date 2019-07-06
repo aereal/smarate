@@ -100,6 +100,19 @@ func (r *Repo) FindUserPreference(ctx context.Context, userID string) (*model.Us
 	return &pref, nil
 }
 
+func (r *Repo) UpdateUserPreference(ctx context.Context, user *model.User, pref *model.UserPreference) error {
+	ref := r.firestore.Collection("user_preferences").Doc(user.ID)
+	update := firestore.Update{Path: "defaultFighterID", Value: nil}
+	if pref != nil {
+		update.Value = pref.DefaultFighterID
+	}
+	_, err := ref.Update(ctx, []firestore.Update{update})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (r *Repo) FindFighterName(ctx context.Context, fighterID int) (*model.LocalizedName, error) {
 	v, ok := localizedNameByID[fighterID]
 	if !ok {
