@@ -1,28 +1,82 @@
-# GraphQL schema example
-#
-# https://gqlgen.com/getting-started/
-
-type Todo {
-  id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
-}
-
-type User {
-  id: ID!
-  name: String!
-}
-
 type Query {
-  todos: [Todo!]!
-}
-
-input NewTodo {
-  text: String!
-  userId: String!
+  visitor: User
+  fightResults(first: Int!): GlobalFightResultConnection!
+  fighter(id: Int!): Fighter
 }
 
 type Mutation {
-  createTodo(input: NewTodo!): Todo!
+  setPreference(defaultFighterID: Int): Boolean!
+  recordResult(
+    myFighterID: Int!,
+    rivalFighterID: Int!,
+    won: Boolean!
+  ): Boolean!
+}
+
+type User {
+  id: String!
+  preference: UserPreference!
+  fightResults(first: Int!): UserFightResultConnection!
+}
+
+type UserPreference {
+  defaultFighterID: Int!
+}
+
+type Fighter {
+  id: Int!
+  name: LocalizedName!
+  fightResults(first: Int!): FighterFightResultConnection!
+}
+
+type LocalizedName {
+  ja: String!
+}
+
+type FighterFightResultConnection {
+  nodes: [FighterFightResult!]!
+  winRatio: Float!
+  mostWonFighters: MatchupConnection!
+}
+
+type FighterFightResult implements IFightResult {
+  myFighter: Fighter!
+  rivalFighter: Fighter!
+  won: Boolean!
+  recordedAt: String!
+}
+
+type Matchup {
+  rivalFighter: Fighter!
+  winRatio: Float!
+}
+
+type MatchupConnection {
+  nodes: [Matchup!]!
+}
+
+type GlobalFightResultConnection {
+  nodes: [GlobalFightResult!]!
+}
+
+type UserFightResultConnection {
+  nodes: [UserFightResult!]!
+}
+
+type GlobalFightResult {
+  wonFighter: Fighter!
+  lostFighter: Fighter!
+  recordedAt: String!
+}
+
+type UserFightResult implements IFightResult {
+  myFighter: Fighter!
+  rivalFighter: Fighter!
+  won: Boolean!
+}
+
+interface IFightResult {
+  myFighter: Fighter!
+  rivalFighter: Fighter!
+  won: Boolean!
 }

@@ -10,7 +10,7 @@ exec:
   package: handler
 model:
   filename: gql/dto/dtos_gen.go
-  package: dtos
+  package: dto
 resolver:
   filename: gql/resolvers/resolver.go
   package: resolvers
