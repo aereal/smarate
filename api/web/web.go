@@ -27,17 +27,18 @@ func (w *Web) graphql() http.HandlerFunc {
 }
 
 func (w *Web) Handler() http.Handler {
-	corwMW := cors.New(cors.Options{
+	corsMW := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 		AllowCredentials: true,
 	})
 	router := httptreemux.New()
 	dispatch := func(method, path string, h http.Handler) {
-		router.UsingContext().Handler(method, path, corwMW.Handler(h))
+		router.UsingContext().Handler(method, path, h)
 	}
-	dispatch(http.MethodGet, "/graphql", w.authMW.Handler(w.graphql()))
-	dispatch(http.MethodPost, "/graphql", w.authMW.Handler(w.graphql()))
-	dispatch(http.MethodOptions, "/graphql", w.authMW.Handler(w.graphql()))
+	dispatch(http.MethodGet, "/graphql", corsMW.Handler(w.authMW.Handler(w.graphql())))
+	dispatch(http.MethodPost, "/graphql", corsMW.Handler(w.authMW.Handler(w.graphql())))
+	dispatch(http.MethodOptions, "/graphql", corsMW.Handler(w.authMW.Handler(w.graphql())))
 	return router
 }
 
