@@ -6,12 +6,14 @@
 package main
 
 import (
+	"github.com/aereal/smarate/api/gql"
 	"github.com/aereal/smarate/api/web"
 )
 
 // Injectors from wire.go:
 
 func InitializeWeb() *web.Web {
-	webWeb := web.ProvideWeb()
+	executableSchema := gql.ProvideExecutableSchema()
+	webWeb := web.ProvideWeb(executableSchema)
 	return webWeb
 }
