@@ -39,7 +39,7 @@ type FighterFightResultConnection {
   mostWonFighters: MatchupConnection!
 }
 
-type FighterFightResult implements IFightResult {
+type FighterFightResult {
   myFighter: Fighter!
   rivalFighter: Fighter!
   won: Boolean!
@@ -69,13 +69,7 @@ type GlobalFightResult {
   recordedAt: String!
 }
 
-type UserFightResult implements IFightResult {
-  myFighter: Fighter!
-  rivalFighter: Fighter!
-  won: Boolean!
-}
-
-interface IFightResult {
+type UserFightResult {
   myFighter: Fighter!
   rivalFighter: Fighter!
   won: Boolean!
