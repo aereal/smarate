@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/firestore"
+	"github.com/99designs/gqlgen-contrib/gqlopencensus"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/handler"
 	"github.com/aereal/smarate/api/auth"
@@ -22,7 +23,7 @@ func ProvideWeb(schema graphql.ExecutableSchema, firestore *firestore.Client, au
 }
 
 func (w *Web) graphql() http.HandlerFunc {
-	return handler.GraphQL(w.schema)
+	return handler.GraphQL(w.schema, handler.Tracer(gqlopencensus.New()))
 }
 
 func (w *Web) Handler() http.Handler {
