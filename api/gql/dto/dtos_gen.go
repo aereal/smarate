@@ -2,48 +2,23 @@
 
 package dto
 
-type IFightResult interface {
-	IsIFightResult()
-}
-
-type Fighter struct {
-	ID           int                           `json:"id"`
-	Name         *LocalizedName                `json:"name"`
-	FightResults *FighterFightResultConnection `json:"fightResults"`
-}
-
-type FighterFightResult struct {
-	MyFighter    *Fighter `json:"myFighter"`
-	RivalFighter *Fighter `json:"rivalFighter"`
-	Won          bool     `json:"won"`
-	RecordedAt   string   `json:"recordedAt"`
-}
-
-func (FighterFightResult) IsIFightResult() {}
+import (
+	"github.com/aereal/smarate/api/model"
+)
 
 type FighterFightResultConnection struct {
-	Nodes           []*FighterFightResult `json:"nodes"`
-	WinRatio        float64               `json:"winRatio"`
-	MostWonFighters *MatchupConnection    `json:"mostWonFighters"`
-}
-
-type GlobalFightResult struct {
-	WonFighter  *Fighter `json:"wonFighter"`
-	LostFighter *Fighter `json:"lostFighter"`
-	RecordedAt  string   `json:"recordedAt"`
+	Nodes           []*model.FighterFightResult `json:"nodes"`
+	WinRatio        float64                     `json:"winRatio"`
+	MostWonFighters *MatchupConnection          `json:"mostWonFighters"`
 }
 
 type GlobalFightResultConnection struct {
-	Nodes []*GlobalFightResult `json:"nodes"`
-}
-
-type LocalizedName struct {
-	Ja string `json:"ja"`
+	Nodes []*model.GlobalFightResult `json:"nodes"`
 }
 
 type Matchup struct {
-	RivalFighter *Fighter `json:"rivalFighter"`
-	WinRatio     float64  `json:"winRatio"`
+	RivalFighter *model.Fighter `json:"rivalFighter"`
+	WinRatio     float64        `json:"winRatio"`
 }
 
 type MatchupConnection struct {
@@ -57,12 +32,10 @@ type User struct {
 }
 
 type UserFightResult struct {
-	MyFighter    *Fighter `json:"myFighter"`
-	RivalFighter *Fighter `json:"rivalFighter"`
-	Won          bool     `json:"won"`
+	MyFighter    *model.Fighter `json:"myFighter"`
+	RivalFighter *model.Fighter `json:"rivalFighter"`
+	Won          bool           `json:"won"`
 }
-
-func (UserFightResult) IsIFightResult() {}
 
 type UserFightResultConnection struct {
 	Nodes []*UserFightResult `json:"nodes"`

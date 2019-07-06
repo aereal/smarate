@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"fmt"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -14,6 +13,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/aereal/smarate/api/gql/dto"
+	"github.com/aereal/smarate/api/model"
 	"github.com/vektah/gqlparser"
 	"github.com/vektah/gqlparser/ast"
 )
@@ -36,6 +36,9 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Fighter() FighterResolver
+	FighterFightResult() FighterFightResultResolver
+	GlobalFightResult() GlobalFightResultResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
 }
@@ -118,6 +121,16 @@ type ComplexityRoot struct {
 	}
 }
 
+type FighterResolver interface {
+	Name(ctx context.Context, obj *model.Fighter) (*model.LocalizedName, error)
+	FightResults(ctx context.Context, obj *model.Fighter, first int) (*dto.FighterFightResultConnection, error)
+}
+type FighterFightResultResolver interface {
+	RecordedAt(ctx context.Context, obj *model.FighterFightResult) (string, error)
+}
+type GlobalFightResultResolver interface {
+	RecordedAt(ctx context.Context, obj *model.GlobalFightResult) (string, error)
+}
 type MutationResolver interface {
 	SetPreference(ctx context.Context, defaultFighterID *int) (bool, error)
 	RecordResult(ctx context.Context, myFighterID int, rivalFighterID int, won bool) (bool, error)
@@ -125,7 +138,7 @@ type MutationResolver interface {
 type QueryResolver interface {
 	Visitor(ctx context.Context) (*dto.User, error)
 	FightResults(ctx context.Context, first int) (*dto.GlobalFightResultConnection, error)
-	Fighter(ctx context.Context, id int) (*dto.Fighter, error)
+	Fighter(ctx context.Context, id int) (*model.Fighter, error)
 }
 
 type executableSchema struct {
@@ -493,7 +506,7 @@ type FighterFightResultConnection {
   mostWonFighters: MatchupConnection!
 }
 
-type FighterFightResult implements IFightResult {
+type FighterFightResult {
   myFighter: Fighter!
   rivalFighter: Fighter!
   won: Boolean!
@@ -523,13 +536,7 @@ type GlobalFightResult {
   recordedAt: String!
 }
 
-type UserFightResult implements IFightResult {
-  myFighter: Fighter!
-  rivalFighter: Fighter!
-  won: Boolean!
-}
-
-interface IFightResult {
+type UserFightResult {
   myFighter: Fighter!
   rivalFighter: Fighter!
   won: Boolean!
@@ -691,7 +698,7 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Fighter_id(ctx context.Context, field graphql.CollectedField, obj *dto.Fighter) (ret graphql.Marshaler) {
+func (ec *executionContext) _Fighter_id(ctx context.Context, field graphql.CollectedField, obj *model.Fighter) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -728,7 +735,7 @@ func (ec *executionContext) _Fighter_id(ctx context.Context, field graphql.Colle
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Fighter_name(ctx context.Context, field graphql.CollectedField, obj *dto.Fighter) (ret graphql.Marshaler) {
+func (ec *executionContext) _Fighter_name(ctx context.Context, field graphql.CollectedField, obj *model.Fighter) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -741,13 +748,13 @@ func (ec *executionContext) _Fighter_name(ctx context.Context, field graphql.Col
 		Object:   "Fighter",
 		Field:    field,
 		Args:     nil,
-		IsMethod: false,
+		IsMethod: true,
 	}
 	ctx = graphql.WithResolverContext(ctx, rctx)
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Name, nil
+		return ec.resolvers.Fighter().Name(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -759,13 +766,13 @@ func (ec *executionContext) _Fighter_name(ctx context.Context, field graphql.Col
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*dto.LocalizedName)
+	res := resTmp.(*model.LocalizedName)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNLocalizedName2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐLocalizedName(ctx, field.Selections, res)
+	return ec.marshalNLocalizedName2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐLocalizedName(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Fighter_fightResults(ctx context.Context, field graphql.CollectedField, obj *dto.Fighter) (ret graphql.Marshaler) {
+func (ec *executionContext) _Fighter_fightResults(ctx context.Context, field graphql.CollectedField, obj *model.Fighter) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -778,7 +785,7 @@ func (ec *executionContext) _Fighter_fightResults(ctx context.Context, field gra
 		Object:   "Fighter",
 		Field:    field,
 		Args:     nil,
-		IsMethod: false,
+		IsMethod: true,
 	}
 	ctx = graphql.WithResolverContext(ctx, rctx)
 	rawArgs := field.ArgumentMap(ec.Variables)
@@ -791,7 +798,7 @@ func (ec *executionContext) _Fighter_fightResults(ctx context.Context, field gra
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.FightResults, nil
+		return ec.resolvers.Fighter().FightResults(rctx, obj, args["first"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -809,7 +816,7 @@ func (ec *executionContext) _Fighter_fightResults(ctx context.Context, field gra
 	return ec.marshalNFighterFightResultConnection2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐFighterFightResultConnection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _FighterFightResult_myFighter(ctx context.Context, field graphql.CollectedField, obj *dto.FighterFightResult) (ret graphql.Marshaler) {
+func (ec *executionContext) _FighterFightResult_myFighter(ctx context.Context, field graphql.CollectedField, obj *model.FighterFightResult) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -840,13 +847,13 @@ func (ec *executionContext) _FighterFightResult_myFighter(ctx context.Context, f
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*dto.Fighter)
+	res := resTmp.(*model.Fighter)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐFighter(ctx, field.Selections, res)
+	return ec.marshalNFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐFighter(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _FighterFightResult_rivalFighter(ctx context.Context, field graphql.CollectedField, obj *dto.FighterFightResult) (ret graphql.Marshaler) {
+func (ec *executionContext) _FighterFightResult_rivalFighter(ctx context.Context, field graphql.CollectedField, obj *model.FighterFightResult) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -877,13 +884,13 @@ func (ec *executionContext) _FighterFightResult_rivalFighter(ctx context.Context
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*dto.Fighter)
+	res := resTmp.(*model.Fighter)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐFighter(ctx, field.Selections, res)
+	return ec.marshalNFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐFighter(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _FighterFightResult_won(ctx context.Context, field graphql.CollectedField, obj *dto.FighterFightResult) (ret graphql.Marshaler) {
+func (ec *executionContext) _FighterFightResult_won(ctx context.Context, field graphql.CollectedField, obj *model.FighterFightResult) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -920,7 +927,7 @@ func (ec *executionContext) _FighterFightResult_won(ctx context.Context, field g
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _FighterFightResult_recordedAt(ctx context.Context, field graphql.CollectedField, obj *dto.FighterFightResult) (ret graphql.Marshaler) {
+func (ec *executionContext) _FighterFightResult_recordedAt(ctx context.Context, field graphql.CollectedField, obj *model.FighterFightResult) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -933,13 +940,13 @@ func (ec *executionContext) _FighterFightResult_recordedAt(ctx context.Context, 
 		Object:   "FighterFightResult",
 		Field:    field,
 		Args:     nil,
-		IsMethod: false,
+		IsMethod: true,
 	}
 	ctx = graphql.WithResolverContext(ctx, rctx)
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.RecordedAt, nil
+		return ec.resolvers.FighterFightResult().RecordedAt(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -988,10 +995,10 @@ func (ec *executionContext) _FighterFightResultConnection_nodes(ctx context.Cont
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*dto.FighterFightResult)
+	res := resTmp.([]*model.FighterFightResult)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNFighterFightResult2ᚕᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐFighterFightResult(ctx, field.Selections, res)
+	return ec.marshalNFighterFightResult2ᚕᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐFighterFightResult(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _FighterFightResultConnection_winRatio(ctx context.Context, field graphql.CollectedField, obj *dto.FighterFightResultConnection) (ret graphql.Marshaler) {
@@ -1068,7 +1075,7 @@ func (ec *executionContext) _FighterFightResultConnection_mostWonFighters(ctx co
 	return ec.marshalNMatchupConnection2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐMatchupConnection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _GlobalFightResult_wonFighter(ctx context.Context, field graphql.CollectedField, obj *dto.GlobalFightResult) (ret graphql.Marshaler) {
+func (ec *executionContext) _GlobalFightResult_wonFighter(ctx context.Context, field graphql.CollectedField, obj *model.GlobalFightResult) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -1099,13 +1106,13 @@ func (ec *executionContext) _GlobalFightResult_wonFighter(ctx context.Context, f
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*dto.Fighter)
+	res := resTmp.(*model.Fighter)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐFighter(ctx, field.Selections, res)
+	return ec.marshalNFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐFighter(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _GlobalFightResult_lostFighter(ctx context.Context, field graphql.CollectedField, obj *dto.GlobalFightResult) (ret graphql.Marshaler) {
+func (ec *executionContext) _GlobalFightResult_lostFighter(ctx context.Context, field graphql.CollectedField, obj *model.GlobalFightResult) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -1136,13 +1143,13 @@ func (ec *executionContext) _GlobalFightResult_lostFighter(ctx context.Context, 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*dto.Fighter)
+	res := resTmp.(*model.Fighter)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐFighter(ctx, field.Selections, res)
+	return ec.marshalNFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐFighter(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _GlobalFightResult_recordedAt(ctx context.Context, field graphql.CollectedField, obj *dto.GlobalFightResult) (ret graphql.Marshaler) {
+func (ec *executionContext) _GlobalFightResult_recordedAt(ctx context.Context, field graphql.CollectedField, obj *model.GlobalFightResult) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -1155,13 +1162,13 @@ func (ec *executionContext) _GlobalFightResult_recordedAt(ctx context.Context, f
 		Object:   "GlobalFightResult",
 		Field:    field,
 		Args:     nil,
-		IsMethod: false,
+		IsMethod: true,
 	}
 	ctx = graphql.WithResolverContext(ctx, rctx)
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.RecordedAt, nil
+		return ec.resolvers.GlobalFightResult().RecordedAt(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1210,13 +1217,13 @@ func (ec *executionContext) _GlobalFightResultConnection_nodes(ctx context.Conte
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*dto.GlobalFightResult)
+	res := resTmp.([]*model.GlobalFightResult)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNGlobalFightResult2ᚕᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐGlobalFightResult(ctx, field.Selections, res)
+	return ec.marshalNGlobalFightResult2ᚕᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐGlobalFightResult(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _LocalizedName_ja(ctx context.Context, field graphql.CollectedField, obj *dto.LocalizedName) (ret graphql.Marshaler) {
+func (ec *executionContext) _LocalizedName_ja(ctx context.Context, field graphql.CollectedField, obj *model.LocalizedName) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -1284,10 +1291,10 @@ func (ec *executionContext) _Matchup_rivalFighter(ctx context.Context, field gra
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*dto.Fighter)
+	res := resTmp.(*model.Fighter)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐFighter(ctx, field.Selections, res)
+	return ec.marshalNFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐFighter(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Matchup_winRatio(ctx context.Context, field graphql.CollectedField, obj *dto.Matchup) (ret graphql.Marshaler) {
@@ -1565,10 +1572,10 @@ func (ec *executionContext) _Query_fighter(ctx context.Context, field graphql.Co
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*dto.Fighter)
+	res := resTmp.(*model.Fighter)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐFighter(ctx, field.Selections, res)
+	return ec.marshalOFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐFighter(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1795,10 +1802,10 @@ func (ec *executionContext) _UserFightResult_myFighter(ctx context.Context, fiel
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*dto.Fighter)
+	res := resTmp.(*model.Fighter)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐFighter(ctx, field.Selections, res)
+	return ec.marshalNFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐFighter(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _UserFightResult_rivalFighter(ctx context.Context, field graphql.CollectedField, obj *dto.UserFightResult) (ret graphql.Marshaler) {
@@ -1832,10 +1839,10 @@ func (ec *executionContext) _UserFightResult_rivalFighter(ctx context.Context, f
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*dto.Fighter)
+	res := resTmp.(*model.Fighter)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐFighter(ctx, field.Selections, res)
+	return ec.marshalNFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐFighter(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _UserFightResult_won(ctx context.Context, field graphql.CollectedField, obj *dto.UserFightResult) (ret graphql.Marshaler) {
@@ -3104,30 +3111,13 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    ************************** interface.gotpl ***************************
 
-func (ec *executionContext) _IFightResult(ctx context.Context, sel ast.SelectionSet, obj *dto.IFightResult) graphql.Marshaler {
-	switch obj := (*obj).(type) {
-	case nil:
-		return graphql.Null
-	case dto.FighterFightResult:
-		return ec._FighterFightResult(ctx, sel, &obj)
-	case *dto.FighterFightResult:
-		return ec._FighterFightResult(ctx, sel, obj)
-	case dto.UserFightResult:
-		return ec._UserFightResult(ctx, sel, &obj)
-	case *dto.UserFightResult:
-		return ec._UserFightResult(ctx, sel, obj)
-	default:
-		panic(fmt.Errorf("unexpected type %T", obj))
-	}
-}
-
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
 
 var fighterImplementors = []string{"Fighter"}
 
-func (ec *executionContext) _Fighter(ctx context.Context, sel ast.SelectionSet, obj *dto.Fighter) graphql.Marshaler {
+func (ec *executionContext) _Fighter(ctx context.Context, sel ast.SelectionSet, obj *model.Fighter) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, fighterImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -3139,18 +3129,36 @@ func (ec *executionContext) _Fighter(ctx context.Context, sel ast.SelectionSet, 
 		case "id":
 			out.Values[i] = ec._Fighter_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "name":
-			out.Values[i] = ec._Fighter_name(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Fighter_name(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "fightResults":
-			out.Values[i] = ec._Fighter_fightResults(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Fighter_fightResults(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3162,9 +3170,9 @@ func (ec *executionContext) _Fighter(ctx context.Context, sel ast.SelectionSet, 
 	return out
 }
 
-var fighterFightResultImplementors = []string{"FighterFightResult", "IFightResult"}
+var fighterFightResultImplementors = []string{"FighterFightResult"}
 
-func (ec *executionContext) _FighterFightResult(ctx context.Context, sel ast.SelectionSet, obj *dto.FighterFightResult) graphql.Marshaler {
+func (ec *executionContext) _FighterFightResult(ctx context.Context, sel ast.SelectionSet, obj *model.FighterFightResult) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, fighterFightResultImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -3176,23 +3184,32 @@ func (ec *executionContext) _FighterFightResult(ctx context.Context, sel ast.Sel
 		case "myFighter":
 			out.Values[i] = ec._FighterFightResult_myFighter(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "rivalFighter":
 			out.Values[i] = ec._FighterFightResult_rivalFighter(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "won":
 			out.Values[i] = ec._FighterFightResult_won(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "recordedAt":
-			out.Values[i] = ec._FighterFightResult_recordedAt(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._FighterFightResult_recordedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3243,7 +3260,7 @@ func (ec *executionContext) _FighterFightResultConnection(ctx context.Context, s
 
 var globalFightResultImplementors = []string{"GlobalFightResult"}
 
-func (ec *executionContext) _GlobalFightResult(ctx context.Context, sel ast.SelectionSet, obj *dto.GlobalFightResult) graphql.Marshaler {
+func (ec *executionContext) _GlobalFightResult(ctx context.Context, sel ast.SelectionSet, obj *model.GlobalFightResult) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, globalFightResultImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -3255,18 +3272,27 @@ func (ec *executionContext) _GlobalFightResult(ctx context.Context, sel ast.Sele
 		case "wonFighter":
 			out.Values[i] = ec._GlobalFightResult_wonFighter(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "lostFighter":
 			out.Values[i] = ec._GlobalFightResult_lostFighter(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "recordedAt":
-			out.Values[i] = ec._GlobalFightResult_recordedAt(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._GlobalFightResult_recordedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3307,7 +3333,7 @@ func (ec *executionContext) _GlobalFightResultConnection(ctx context.Context, se
 
 var localizedNameImplementors = []string{"LocalizedName"}
 
-func (ec *executionContext) _LocalizedName(ctx context.Context, sel ast.SelectionSet, obj *dto.LocalizedName) graphql.Marshaler {
+func (ec *executionContext) _LocalizedName(ctx context.Context, sel ast.SelectionSet, obj *model.LocalizedName) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, localizedNameImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -3530,7 +3556,7 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 	return out
 }
 
-var userFightResultImplementors = []string{"UserFightResult", "IFightResult"}
+var userFightResultImplementors = []string{"UserFightResult"}
 
 func (ec *executionContext) _UserFightResult(ctx context.Context, sel ast.SelectionSet, obj *dto.UserFightResult) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, userFightResultImplementors)
@@ -3880,11 +3906,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNFighter2githubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐFighter(ctx context.Context, sel ast.SelectionSet, v dto.Fighter) graphql.Marshaler {
+func (ec *executionContext) marshalNFighter2githubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐFighter(ctx context.Context, sel ast.SelectionSet, v model.Fighter) graphql.Marshaler {
 	return ec._Fighter(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐFighter(ctx context.Context, sel ast.SelectionSet, v *dto.Fighter) graphql.Marshaler {
+func (ec *executionContext) marshalNFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐFighter(ctx context.Context, sel ast.SelectionSet, v *model.Fighter) graphql.Marshaler {
 	if v == nil {
 		if !ec.HasError(graphql.GetResolverContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -3894,11 +3920,11 @@ func (ec *executionContext) marshalNFighter2ᚖgithubᚗcomᚋaerealᚋsmarate�
 	return ec._Fighter(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNFighterFightResult2githubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐFighterFightResult(ctx context.Context, sel ast.SelectionSet, v dto.FighterFightResult) graphql.Marshaler {
+func (ec *executionContext) marshalNFighterFightResult2githubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐFighterFightResult(ctx context.Context, sel ast.SelectionSet, v model.FighterFightResult) graphql.Marshaler {
 	return ec._FighterFightResult(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNFighterFightResult2ᚕᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐFighterFightResult(ctx context.Context, sel ast.SelectionSet, v []*dto.FighterFightResult) graphql.Marshaler {
+func (ec *executionContext) marshalNFighterFightResult2ᚕᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐFighterFightResult(ctx context.Context, sel ast.SelectionSet, v []*model.FighterFightResult) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3922,7 +3948,7 @@ func (ec *executionContext) marshalNFighterFightResult2ᚕᚖgithubᚗcomᚋaere
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNFighterFightResult2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐFighterFightResult(ctx, sel, v[i])
+			ret[i] = ec.marshalNFighterFightResult2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐFighterFightResult(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3935,7 +3961,7 @@ func (ec *executionContext) marshalNFighterFightResult2ᚕᚖgithubᚗcomᚋaere
 	return ret
 }
 
-func (ec *executionContext) marshalNFighterFightResult2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐFighterFightResult(ctx context.Context, sel ast.SelectionSet, v *dto.FighterFightResult) graphql.Marshaler {
+func (ec *executionContext) marshalNFighterFightResult2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐFighterFightResult(ctx context.Context, sel ast.SelectionSet, v *model.FighterFightResult) graphql.Marshaler {
 	if v == nil {
 		if !ec.HasError(graphql.GetResolverContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -3973,11 +3999,11 @@ func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNGlobalFightResult2githubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐGlobalFightResult(ctx context.Context, sel ast.SelectionSet, v dto.GlobalFightResult) graphql.Marshaler {
+func (ec *executionContext) marshalNGlobalFightResult2githubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐGlobalFightResult(ctx context.Context, sel ast.SelectionSet, v model.GlobalFightResult) graphql.Marshaler {
 	return ec._GlobalFightResult(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNGlobalFightResult2ᚕᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐGlobalFightResult(ctx context.Context, sel ast.SelectionSet, v []*dto.GlobalFightResult) graphql.Marshaler {
+func (ec *executionContext) marshalNGlobalFightResult2ᚕᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐGlobalFightResult(ctx context.Context, sel ast.SelectionSet, v []*model.GlobalFightResult) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -4001,7 +4027,7 @@ func (ec *executionContext) marshalNGlobalFightResult2ᚕᚖgithubᚗcomᚋaerea
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNGlobalFightResult2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐGlobalFightResult(ctx, sel, v[i])
+			ret[i] = ec.marshalNGlobalFightResult2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐGlobalFightResult(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -4014,7 +4040,7 @@ func (ec *executionContext) marshalNGlobalFightResult2ᚕᚖgithubᚗcomᚋaerea
 	return ret
 }
 
-func (ec *executionContext) marshalNGlobalFightResult2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐGlobalFightResult(ctx context.Context, sel ast.SelectionSet, v *dto.GlobalFightResult) graphql.Marshaler {
+func (ec *executionContext) marshalNGlobalFightResult2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐGlobalFightResult(ctx context.Context, sel ast.SelectionSet, v *model.GlobalFightResult) graphql.Marshaler {
 	if v == nil {
 		if !ec.HasError(graphql.GetResolverContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -4052,11 +4078,11 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) marshalNLocalizedName2githubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐLocalizedName(ctx context.Context, sel ast.SelectionSet, v dto.LocalizedName) graphql.Marshaler {
+func (ec *executionContext) marshalNLocalizedName2githubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐLocalizedName(ctx context.Context, sel ast.SelectionSet, v model.LocalizedName) graphql.Marshaler {
 	return ec._LocalizedName(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNLocalizedName2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐLocalizedName(ctx context.Context, sel ast.SelectionSet, v *dto.LocalizedName) graphql.Marshaler {
+func (ec *executionContext) marshalNLocalizedName2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐLocalizedName(ctx context.Context, sel ast.SelectionSet, v *model.LocalizedName) graphql.Marshaler {
 	if v == nil {
 		if !ec.HasError(graphql.GetResolverContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -4473,11 +4499,11 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return ec.marshalOBoolean2bool(ctx, sel, *v)
 }
 
-func (ec *executionContext) marshalOFighter2githubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐFighter(ctx context.Context, sel ast.SelectionSet, v dto.Fighter) graphql.Marshaler {
+func (ec *executionContext) marshalOFighter2githubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐFighter(ctx context.Context, sel ast.SelectionSet, v model.Fighter) graphql.Marshaler {
 	return ec._Fighter(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalOFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐFighter(ctx context.Context, sel ast.SelectionSet, v *dto.Fighter) graphql.Marshaler {
+func (ec *executionContext) marshalOFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐFighter(ctx context.Context, sel ast.SelectionSet, v *model.Fighter) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

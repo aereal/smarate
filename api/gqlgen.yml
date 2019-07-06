@@ -16,3 +16,12 @@ resolver:
   package: resolvers
   type: Resolver
 autobind: []
+models:
+  GlobalFightResult:
+    model: github.com/aereal/smarate/api/model.GlobalFightResult
+  Fighter:
+    model: github.com/aereal/smarate/api/model.Fighter
+  FighterFightResult:
+    model: github.com/aereal/smarate/api/model.FighterFightResult
+  LocalizedName:
+    model: github.com/aereal/smarate/api/model.LocalizedName

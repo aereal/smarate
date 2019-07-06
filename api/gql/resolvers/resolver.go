@@ -2,10 +2,12 @@ package resolvers
 
 import (
 	"context"
+	"time"
 
 	"github.com/aereal/smarate/api/gql/dto"
-	"github.com/aereal/smarate/api/repo"
 	handler1 "github.com/aereal/smarate/api/gql/handler"
+	"github.com/aereal/smarate/api/model"
+	"github.com/aereal/smarate/api/repo"
 )
 
 func ProvideResolver(repo *repo.Repo) *Resolver {
@@ -22,6 +24,15 @@ func (r *Resolver) Mutation() handler1.MutationResolver {
 func (r *Resolver) Query() handler1.QueryResolver {
 	return &queryResolver{r}
 }
+func (r *Resolver) Fighter() handler1.FighterResolver {
+	return &fighterResolver{r}
+}
+func (r *Resolver) FighterFightResult() handler1.FighterFightResultResolver {
+	return &fighterFightResultResolver{r}
+}
+func (r *Resolver) GlobalFightResult() handler1.GlobalFightResultResolver {
+	return &globalFightResultResolver{r}
+}
 
 type mutationResolver struct{ *Resolver }
 
@@ -36,13 +47,47 @@ func (r *mutationResolver) SetPreference(ctx context.Context, defaultFighterID *
 type queryResolver struct{ *Resolver }
 
 func (r *queryResolver) FightResults(ctx context.Context, first int) (*dto.GlobalFightResultConnection, error) {
-	return nil, nil
+	results, err := r.repo.FindGlobalFightResults(ctx, first)
+	if err != nil {
+		return nil, err
+	}
+	conn := &dto.GlobalFightResultConnection{
+		Nodes: results,
+	}
+	return conn, nil
 }
 
-func (r *queryResolver) Fighter(ctx context.Context, id int) (*dto.Fighter, error) {
-	return nil, nil // TODO
+func (r *queryResolver) Fighter(ctx context.Context, id int) (*model.Fighter, error) {
+	return &model.Fighter{ID: id}, nil
 }
 
 func (r *queryResolver) Visitor(ctx context.Context) (*dto.User, error) {
 	return nil, nil
+}
+
+type fighterResolver struct{ *Resolver }
+
+func (r *fighterResolver) Name(ctx context.Context, fighter *model.Fighter) (*model.LocalizedName, error) {
+	return r.repo.FindFighterName(ctx, fighter.ID)
+}
+
+func (r *fighterResolver) FightResults(ctx context.Context, fighter *model.Fighter, first int) (*dto.FighterFightResultConnection, error) {
+	results, err := r.repo.FindFighterFightResults(ctx, fighter.ID, first)
+	if err != nil {
+		return nil, err
+	}
+	conn := &dto.FighterFightResultConnection{Nodes: results}
+	return conn, nil
+}
+
+type fighterFightResultResolver struct{ *Resolver }
+
+func (r *fighterFightResultResolver) RecordedAt(ctx context.Context, result *model.FighterFightResult) (string, error) {
+	return result.RecordedAt.Format(time.RFC3339Nano), nil
+}
+
+type globalFightResultResolver struct{ *Resolver }
+
+func (r *globalFightResultResolver) RecordedAt(ctx context.Context, result *model.GlobalFightResult) (string, error) {
+	return result.RecordedAt.Format(time.RFC3339Nano), nil
 }
