@@ -6,10 +6,13 @@
 schema:
 - schema.graphql
 exec:
-  filename: generated.go
+  filename: gql/handler/handler.go
+  package: handler
 model:
-  filename: models_gen.go
+  filename: gql/dto/dtos_gen.go
+  package: dtos
 resolver:
-  filename: resolver.go
+  filename: gql/resolvers/resolver.go
+  package: resolvers
   type: Resolver
 autobind: []
