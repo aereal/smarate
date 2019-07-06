@@ -6,6 +6,7 @@ import (
 	"cloud.google.com/go/firestore"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/handler"
+	"github.com/aereal/smarate/api/auth"
 	"github.com/dimfeld/httptreemux"
 	"github.com/rs/cors"
 )
@@ -13,10 +14,11 @@ import (
 type Web struct {
 	schema          graphql.ExecutableSchema
 	firestoreClient *firestore.Client
+	authMW          *auth.Middleware
 }
 
-func ProvideWeb(schema graphql.ExecutableSchema, firestore *firestore.Client) *Web {
-	return &Web{schema: schema, firestoreClient: firestore}
+func ProvideWeb(schema graphql.ExecutableSchema, firestore *firestore.Client, authMW *auth.Middleware) *Web {
+	return &Web{schema: schema, firestoreClient: firestore, authMW: authMW}
 }
 
 func (w *Web) graphql() http.HandlerFunc {
@@ -29,9 +31,9 @@ func (w *Web) Handler() http.Handler {
 	dispatch := func(method, path string, h http.Handler) {
 		router.UsingContext().Handler(method, path, corwMW.Handler(h))
 	}
-	dispatch(http.MethodGet, "/graphql", w.graphql())
-	dispatch(http.MethodPost, "/graphql", w.graphql())
-	dispatch(http.MethodOptions, "/graphql", w.graphql())
+	dispatch(http.MethodGet, "/graphql", w.authMW.Handler(w.graphql()))
+	dispatch(http.MethodPost, "/graphql", w.authMW.Handler(w.graphql()))
+	dispatch(http.MethodOptions, "/graphql", w.authMW.Handler(w.graphql()))
 	return router
 }
 
