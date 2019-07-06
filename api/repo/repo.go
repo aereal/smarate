@@ -88,6 +88,18 @@ func (r *Repo) FindUserFromToken(ctx context.Context, token *auth.Token) (*model
 	return &model.User{ID: token.UID}, nil
 }
 
+func (r *Repo) FindUserPreference(ctx context.Context, userID string) (*model.UserPreference, error) {
+	snapshot, err := r.firestore.Collection("user_preferences").Doc(userID).Get(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var pref model.UserPreference
+	if err := snapshot.DataTo(&pref); err != nil {
+		return nil, err
+	}
+	return &pref, nil
+}
+
 func (r *Repo) FindFighterName(ctx context.Context, fighterID int) (*model.LocalizedName, error) {
 	v, ok := localizedNameByID[fighterID]
 	if !ok {

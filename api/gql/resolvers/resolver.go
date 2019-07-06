@@ -103,8 +103,8 @@ func (r *globalFightResultResolver) RecordedAt(ctx context.Context, result *mode
 
 type userResolver struct{ *Resolver }
 
-func (r *userResolver) Preference(ctx context.Context, user *model.User) (*dto.UserPreference, error) {
-	return nil, nil // TODO
+func (r *userResolver) Preference(ctx context.Context, user *model.User) (*model.UserPreference, error) {
+	return r.repo.FindUserPreference(ctx, user.ID)
 }
 
 func (r *userResolver) FightResults(ctx context.Context, user *model.User, first int) (*dto.UserFightResultConnection, error) {

@@ -56,3 +56,7 @@ type LocalizedName struct {
 type User struct {
 	ID string
 }
+
+type UserPreference struct {
+	DefaultFighterID int `json:"defaultFighterID"`
+}

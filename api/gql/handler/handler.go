@@ -142,7 +142,7 @@ type QueryResolver interface {
 	Fighter(ctx context.Context, id int) (*model.Fighter, error)
 }
 type UserResolver interface {
-	Preference(ctx context.Context, obj *model.User) (*dto.UserPreference, error)
+	Preference(ctx context.Context, obj *model.User) (*model.UserPreference, error)
 	FightResults(ctx context.Context, obj *model.User, first int) (*dto.UserFightResultConnection, error)
 }
 
@@ -1726,10 +1726,10 @@ func (ec *executionContext) _User_preference(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*dto.UserPreference)
+	res := resTmp.(*model.UserPreference)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNUserPreference2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐUserPreference(ctx, field.Selections, res)
+	return ec.marshalNUserPreference2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐUserPreference(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _User_fightResults(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
@@ -1924,7 +1924,7 @@ func (ec *executionContext) _UserFightResultConnection_nodes(ctx context.Context
 	return ec.marshalNUserFightResult2ᚕᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐUserFightResult(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _UserPreference_defaultFighterID(ctx context.Context, field graphql.CollectedField, obj *dto.UserPreference) (ret graphql.Marshaler) {
+func (ec *executionContext) _UserPreference_defaultFighterID(ctx context.Context, field graphql.CollectedField, obj *model.UserPreference) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -3645,7 +3645,7 @@ func (ec *executionContext) _UserFightResultConnection(ctx context.Context, sel 
 
 var userPreferenceImplementors = []string{"UserPreference"}
 
-func (ec *executionContext) _UserPreference(ctx context.Context, sel ast.SelectionSet, obj *dto.UserPreference) graphql.Marshaler {
+func (ec *executionContext) _UserPreference(ctx context.Context, sel ast.SelectionSet, obj *model.UserPreference) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, userPreferenceImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -4259,11 +4259,11 @@ func (ec *executionContext) marshalNUserFightResultConnection2ᚖgithubᚗcomᚋ
 	return ec._UserFightResultConnection(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNUserPreference2githubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐUserPreference(ctx context.Context, sel ast.SelectionSet, v dto.UserPreference) graphql.Marshaler {
+func (ec *executionContext) marshalNUserPreference2githubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐUserPreference(ctx context.Context, sel ast.SelectionSet, v model.UserPreference) graphql.Marshaler {
 	return ec._UserPreference(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNUserPreference2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐUserPreference(ctx context.Context, sel ast.SelectionSet, v *dto.UserPreference) graphql.Marshaler {
+func (ec *executionContext) marshalNUserPreference2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐUserPreference(ctx context.Context, sel ast.SelectionSet, v *model.UserPreference) graphql.Marshaler {
 	if v == nil {
 		if !ec.HasError(graphql.GetResolverContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")

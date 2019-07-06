@@ -27,3 +27,5 @@ models:
     model: github.com/aereal/smarate/api/model.LocalizedName
   User:
     model: github.com/aereal/smarate/api/model.User
+  UserPreference:
+    model: github.com/aereal/smarate/api/model.UserPreference

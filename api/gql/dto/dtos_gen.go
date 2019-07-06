@@ -34,7 +34,3 @@ type UserFightResult struct {
 type UserFightResultConnection struct {
 	Nodes []*UserFightResult `json:"nodes"`
 }
-
-type UserPreference struct {
-	DefaultFighterID int `json:"defaultFighterID"`
-}
