@@ -6,6 +6,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/handler"
 	"github.com/dimfeld/httptreemux"
+	"github.com/rs/cors"
 )
 
 type Web struct {
@@ -21,10 +22,14 @@ func (w *Web) graphql() http.HandlerFunc {
 }
 
 func (w *Web) Handler() http.Handler {
+	corwMW := cors.New(cors.Options{})
 	router := httptreemux.New()
-	router.UsingContext().GET("/graphql", w.graphql())
-	router.UsingContext().POST("/graphql", w.graphql())
-	router.UsingContext().OPTIONS("/graphql", w.graphql())
+	dispatch := func(method, path string, h http.Handler) {
+		router.UsingContext().Handler(method, path, corwMW.Handler(h))
+	}
+	dispatch(http.MethodGet, "/graphql", w.graphql())
+	dispatch(http.MethodPost, "/graphql", w.graphql())
+	dispatch(http.MethodOptions, "/graphql", w.graphql())
 	return router
 }
 
