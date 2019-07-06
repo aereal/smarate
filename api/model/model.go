@@ -52,3 +52,7 @@ type Fighter struct {
 type LocalizedName struct {
 	Ja string
 }
+
+type User struct {
+	ID string
+}

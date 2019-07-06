@@ -41,6 +41,7 @@ type ResolverRoot interface {
 	GlobalFightResult() GlobalFightResultResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
+	User() UserResolver
 }
 
 type DirectiveRoot struct {
@@ -136,9 +137,13 @@ type MutationResolver interface {
 	RecordResult(ctx context.Context, myFighterID int, rivalFighterID int, won bool) (bool, error)
 }
 type QueryResolver interface {
-	Visitor(ctx context.Context) (*dto.User, error)
+	Visitor(ctx context.Context) (*model.User, error)
 	FightResults(ctx context.Context, first int) (*dto.GlobalFightResultConnection, error)
 	Fighter(ctx context.Context, id int) (*model.Fighter, error)
+}
+type UserResolver interface {
+	Preference(ctx context.Context, obj *model.User) (*dto.UserPreference, error)
+	FightResults(ctx context.Context, obj *model.User, first int) (*dto.UserFightResultConnection, error)
 }
 
 type executableSchema struct {
@@ -1487,10 +1492,10 @@ func (ec *executionContext) _Query_visitor(ctx context.Context, field graphql.Co
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*dto.User)
+	res := resTmp.(*model.User)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOUser2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐUser(ctx, field.Selections, res)
+	return ec.marshalOUser2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_fightResults(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1653,7 +1658,7 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *dto.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -1690,7 +1695,7 @@ func (ec *executionContext) _User_id(ctx context.Context, field graphql.Collecte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User_preference(ctx context.Context, field graphql.CollectedField, obj *dto.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_preference(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -1703,13 +1708,13 @@ func (ec *executionContext) _User_preference(ctx context.Context, field graphql.
 		Object:   "User",
 		Field:    field,
 		Args:     nil,
-		IsMethod: false,
+		IsMethod: true,
 	}
 	ctx = graphql.WithResolverContext(ctx, rctx)
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Preference, nil
+		return ec.resolvers.User().Preference(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1727,7 +1732,7 @@ func (ec *executionContext) _User_preference(ctx context.Context, field graphql.
 	return ec.marshalNUserPreference2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐUserPreference(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User_fightResults(ctx context.Context, field graphql.CollectedField, obj *dto.User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_fightResults(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -1740,7 +1745,7 @@ func (ec *executionContext) _User_fightResults(ctx context.Context, field graphq
 		Object:   "User",
 		Field:    field,
 		Args:     nil,
-		IsMethod: false,
+		IsMethod: true,
 	}
 	ctx = graphql.WithResolverContext(ctx, rctx)
 	rawArgs := field.ArgumentMap(ec.Variables)
@@ -1753,7 +1758,7 @@ func (ec *executionContext) _User_fightResults(ctx context.Context, field graphq
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.FightResults, nil
+		return ec.resolvers.User().FightResults(rctx, obj, args["first"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3521,7 +3526,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 
 var userImplementors = []string{"User"}
 
-func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj *dto.User) graphql.Marshaler {
+func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj *model.User) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, userImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -3533,18 +3538,36 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 		case "id":
 			out.Values[i] = ec._User_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "preference":
-			out.Values[i] = ec._User_preference(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._User_preference(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "fightResults":
-			out.Values[i] = ec._User_fightResults(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._User_fightResults(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4556,11 +4579,11 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	return ec.marshalOString2string(ctx, sel, *v)
 }
 
-func (ec *executionContext) marshalOUser2githubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐUser(ctx context.Context, sel ast.SelectionSet, v dto.User) graphql.Marshaler {
+func (ec *executionContext) marshalOUser2githubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v model.User) graphql.Marshaler {
 	return ec._User(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalOUser2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐUser(ctx context.Context, sel ast.SelectionSet, v *dto.User) graphql.Marshaler {
+func (ec *executionContext) marshalOUser2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

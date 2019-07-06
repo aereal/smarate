@@ -25,12 +25,6 @@ type MatchupConnection struct {
 	Nodes []*Matchup `json:"nodes"`
 }
 
-type User struct {
-	ID           string                     `json:"id"`
-	Preference   *UserPreference            `json:"preference"`
-	FightResults *UserFightResultConnection `json:"fightResults"`
-}
-
 type UserFightResult struct {
 	MyFighter    *model.Fighter `json:"myFighter"`
 	RivalFighter *model.Fighter `json:"rivalFighter"`

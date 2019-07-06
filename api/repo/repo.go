@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"cloud.google.com/go/firestore"
+	"firebase.google.com/go/auth"
 	"github.com/aereal/smarate/api/model"
 	"google.golang.org/api/iterator"
 )
@@ -81,6 +82,10 @@ func (r *Repo) findFighterFightResultByStatus(ctx context.Context, fighterID int
 		results = append(results, fighterResult)
 	}
 	return results, nil
+}
+
+func (r *Repo) FindUserFromToken(ctx context.Context, token *auth.Token) (*model.User, error) {
+	return &model.User{ID: token.UID}, nil
 }
 
 func (r *Repo) FindFighterName(ctx context.Context, fighterID int) (*model.LocalizedName, error) {

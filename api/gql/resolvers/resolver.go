@@ -2,8 +2,10 @@ package resolvers
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/aereal/smarate/api/auth"
 	"github.com/aereal/smarate/api/gql/dto"
 	handler1 "github.com/aereal/smarate/api/gql/handler"
 	"github.com/aereal/smarate/api/model"
@@ -33,6 +35,9 @@ func (r *Resolver) FighterFightResult() handler1.FighterFightResultResolver {
 func (r *Resolver) GlobalFightResult() handler1.GlobalFightResultResolver {
 	return &globalFightResultResolver{r}
 }
+func (r *Resolver) User() handler1.UserResolver {
+	return &userResolver{r}
+}
 
 type mutationResolver struct{ *Resolver }
 
@@ -61,8 +66,12 @@ func (r *queryResolver) Fighter(ctx context.Context, id int) (*model.Fighter, er
 	return &model.Fighter{ID: id}, nil
 }
 
-func (r *queryResolver) Visitor(ctx context.Context) (*dto.User, error) {
-	return nil, nil
+func (r *queryResolver) Visitor(ctx context.Context) (*model.User, error) {
+	token := auth.GetToken(ctx)
+	if token == nil {
+		return nil, fmt.Errorf("authentication failed")
+	}
+	return r.repo.FindUserFromToken(ctx, token)
 }
 
 type fighterResolver struct{ *Resolver }
@@ -90,4 +99,14 @@ type globalFightResultResolver struct{ *Resolver }
 
 func (r *globalFightResultResolver) RecordedAt(ctx context.Context, result *model.GlobalFightResult) (string, error) {
 	return result.RecordedAt.Format(time.RFC3339Nano), nil
+}
+
+type userResolver struct{ *Resolver }
+
+func (r *userResolver) Preference(ctx context.Context, user *model.User) (*dto.UserPreference, error) {
+	return nil, nil // TODO
+}
+
+func (r *userResolver) FightResults(ctx context.Context, user *model.User, first int) (*dto.UserFightResultConnection, error) {
+	return nil, nil // TODO
 }
