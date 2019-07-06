@@ -9,7 +9,7 @@ import (
 type Web struct {
 }
 
-func New() *Web {
+func ProvideWeb() *Web {
 	return &Web{}
 }
 

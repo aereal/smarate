@@ -9,8 +9,6 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-
-	"github.com/aereal/smarate/api/web"
 )
 
 func main() {
@@ -26,7 +24,7 @@ func run() error {
 		port = "8080"
 	}
 
-	w := web.New()
+	w := InitializeWeb()
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%s", port),
 		Handler: w.Handler(),
