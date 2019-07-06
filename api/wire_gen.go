@@ -8,17 +8,21 @@ package main
 import (
 	"context"
 	"github.com/aereal/smarate/api/gql"
+	"github.com/aereal/smarate/api/gql/resolvers"
+	"github.com/aereal/smarate/api/repo"
 	"github.com/aereal/smarate/api/web"
 )
 
 // Injectors from wire.go:
 
 func InitializeWeb(ctx context.Context) (*web.Web, error) {
-	executableSchema := gql.ProvideExecutableSchema()
 	client, err := ProvideFirestoreClient(ctx)
 	if err != nil {
 		return nil, err
 	}
+	repoRepo := repo.ProvideRepo(client)
+	resolver := resolvers.ProvideResolver(repoRepo)
+	executableSchema := gql.ProvideExecutableSchema(resolver)
 	webWeb := web.ProvideWeb(executableSchema, client)
 	return webWeb, nil
 }

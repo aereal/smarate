@@ -6,8 +6,8 @@ import (
 	"github.com/aereal/smarate/api/gql/resolvers"
 )
 
-func ProvideExecutableSchema() graphql.ExecutableSchema {
+func ProvideExecutableSchema(res *resolvers.Resolver) graphql.ExecutableSchema {
 	return handler.NewExecutableSchema(handler.Config{
-		Resolvers: &resolvers.Resolver{},
+		Resolvers: res,
 	})
 }

@@ -12,4 +12,5 @@ require (
 	github.com/rs/cors v1.6.0
 	github.com/vektah/gqlparser v1.1.2
 	go.opencensus.io v0.22.0
+	google.golang.org/api v0.7.0
 )
