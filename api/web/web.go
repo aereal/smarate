@@ -1,8 +1,10 @@
 package web
 
 import (
+	"encoding/json"
 	"net/http"
 
+	"cloud.google.com/go/firestore"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/handler"
 	"github.com/dimfeld/httptreemux"
@@ -10,11 +12,12 @@ import (
 )
 
 type Web struct {
-	schema graphql.ExecutableSchema
+	schema          graphql.ExecutableSchema
+	firestoreClient *firestore.Client
 }
 
-func ProvideWeb(schema graphql.ExecutableSchema) *Web {
-	return &Web{schema: schema}
+func ProvideWeb(schema graphql.ExecutableSchema, firestore *firestore.Client) *Web {
+	return &Web{schema: schema, firestoreClient: firestore}
 }
 
 func (w *Web) graphql() http.HandlerFunc {

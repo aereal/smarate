@@ -24,12 +24,18 @@ func run() error {
 		port = "8080"
 	}
 
-	w := InitializeWeb()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	w, err := InitializeWeb(ctx)
+	if err != nil {
+		return err
+	}
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%s", port),
 		Handler: w.Handler(),
 	}
-	go graceful(server, 5*time.Second)
+	go graceful(ctx, server, 5*time.Second)
 
 	log.Printf("starting server")
 	if err := server.ListenAndServe(); err != http.ErrServerClosed {
@@ -43,11 +49,11 @@ func run() error {
 	return nil
 }
 
-func graceful(server *http.Server, timeout time.Duration) {
+func graceful(parent context.Context, server *http.Server, timeout time.Duration) {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 	sig := <-sigChan
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(parent, timeout)
 	defer cancel()
 	log.Printf("shutting down server signal=%q", sig)
 	if err := server.Shutdown(ctx); err != nil {
