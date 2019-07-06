@@ -9,6 +9,11 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"contrib.go.opencensus.io/exporter/stackdriver"
+	"contrib.go.opencensus.io/exporter/stackdriver/propagation"
+	"go.opencensus.io/plugin/ochttp"
+	"go.opencensus.io/trace"
 )
 
 func main() {
@@ -19,6 +24,12 @@ func main() {
 }
 
 func run() error {
+	exporter, err := stackdriver.NewExporter(stackdriver.Options{})
+	if err != nil {
+		return err
+	}
+	trace.RegisterExporter(exporter)
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -32,8 +43,11 @@ func run() error {
 		return err
 	}
 	server := &http.Server{
-		Addr:    fmt.Sprintf(":%s", port),
-		Handler: w.Handler(),
+		Addr: fmt.Sprintf(":%s", port),
+		Handler: &ochttp.Handler{
+			Handler:     w.Handler(),
+			Propagation: &propagation.HTTPFormat{},
+		},
 	}
 	go graceful(ctx, server, 5*time.Second)
 
