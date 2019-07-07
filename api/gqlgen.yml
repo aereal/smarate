@@ -23,6 +23,8 @@ models:
     model: github.com/aereal/smarate/api/model.Fighter
   FighterFightResult:
     model: github.com/aereal/smarate/api/model.FighterFightResult
+  FighterFightResultConnection:
+    model: github.com/aereal/smarate/api/model.FighterFightResultConnection
   LocalizedName:
     model: github.com/aereal/smarate/api/model.LocalizedName
   User:
@@ -31,3 +33,5 @@ models:
     model: github.com/aereal/smarate/api/model.UserPreference
   UserFightResult:
     model: github.com/aereal/smarate/api/model.UserFightResult
+  Matchup:
+    model: github.com/aereal/smarate/api/model.Matchup

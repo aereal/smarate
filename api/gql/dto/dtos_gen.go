@@ -6,23 +6,12 @@ import (
 	"github.com/aereal/smarate/api/model"
 )
 
-type FighterFightResultConnection struct {
-	Nodes           []*model.FighterFightResult `json:"nodes"`
-	WinRatio        float64                     `json:"winRatio"`
-	MostWonFighters *MatchupConnection          `json:"mostWonFighters"`
-}
-
 type GlobalFightResultConnection struct {
 	Nodes []*model.GlobalFightResult `json:"nodes"`
 }
 
-type Matchup struct {
-	RivalFighter *model.Fighter `json:"rivalFighter"`
-	WinRatio     float64        `json:"winRatio"`
-}
-
 type MatchupConnection struct {
-	Nodes []*Matchup `json:"nodes"`
+	Nodes []*model.Matchup `json:"nodes"`
 }
 
 type UserFightResultConnection struct {

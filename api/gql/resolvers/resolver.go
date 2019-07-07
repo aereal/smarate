@@ -38,6 +38,12 @@ func (r *Resolver) GlobalFightResult() handler1.GlobalFightResultResolver {
 func (r *Resolver) User() handler1.UserResolver {
 	return &userResolver{r}
 }
+func (r *Resolver) FighterFightResultConnection() handler1.FighterFightResultConnectionResolver {
+	return &fighterFightResultConnectionResolver{r}
+}
+func (r *Resolver) Matchup() handler1.MatchupResolver {
+	return &matchupResolver{r}
+}
 
 type mutationResolver struct{ *Resolver }
 
@@ -105,12 +111,12 @@ func (r *fighterResolver) Name(ctx context.Context, fighter *model.Fighter) (*mo
 	return r.repo.FindFighterName(ctx, fighter.ID)
 }
 
-func (r *fighterResolver) FightResults(ctx context.Context, fighter *model.Fighter, first int) (*dto.FighterFightResultConnection, error) {
+func (r *fighterResolver) FightResults(ctx context.Context, fighter *model.Fighter, first int) (*model.FighterFightResultConnection, error) {
 	results, err := r.repo.FindFighterFightResults(ctx, fighter.ID, first)
 	if err != nil {
 		return nil, err
 	}
-	conn := &dto.FighterFightResultConnection{Nodes: results}
+	conn := &model.FighterFightResultConnection{Nodes: results, Fighter: fighter}
 	return conn, nil
 }
 
@@ -140,4 +146,43 @@ func (r *userResolver) FightResults(ctx context.Context, user *model.User, first
 	}
 	conn.Nodes = results
 	return conn, nil
+}
+
+type fighterFightResultConnectionResolver struct{ *Resolver }
+
+type intermediateStats struct {
+	winCount     int
+	totalMatches int
+}
+
+func (r *fighterFightResultConnectionResolver) MostWonFighters(ctx context.Context, conn *model.FighterFightResultConnection) (*dto.MatchupConnection, error) {
+	// rivalFighter.ID => intermediateStats
+	stats := map[int]*intermediateStats{}
+	for _, result := range conn.Nodes {
+		v := stats[result.RivalFighter.ID]
+		if v == nil {
+			v = &intermediateStats{}
+		}
+		v.totalMatches++
+		if result.Won {
+			v.winCount++
+		}
+		stats[result.RivalFighter.ID] = v
+	}
+
+	mc := &dto.MatchupConnection{}
+	for rivalFighterID, stat := range stats {
+		rate := float64(stat.winCount) / float64(stat.totalMatches)
+		mc.Nodes = append(mc.Nodes, &model.Matchup{
+			RivalFighterID: rivalFighterID,
+			WinRatio:       rate,
+		})
+	}
+	return mc, nil
+}
+
+type matchupResolver struct{ *Resolver }
+
+func (r *matchupResolver) RivalFighter(ctx context.Context, matchup *model.Matchup) (*model.Fighter, error) {
+	return &model.Fighter{ID: matchup.RivalFighterID}, nil
 }

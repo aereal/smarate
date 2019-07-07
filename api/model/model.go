@@ -1,6 +1,7 @@
 package model
 
 import (
+	"context"
 	"fmt"
 	"time"
 )
@@ -38,6 +39,22 @@ type UserFightResult struct {
 	Won          bool
 }
 
+type FighterFightResultConnection struct {
+	Fighter *Fighter              `json:"-"`
+	Nodes   []*FighterFightResult `json:"nodes"`
+}
+
+func (c *FighterFightResultConnection) WinRatio(ctx context.Context) float64 {
+	total := float64(len(c.Nodes))
+	wins := 0.0
+	for _, result := range c.Nodes {
+		if result.Won {
+			wins++
+		}
+	}
+	return wins / total
+}
+
 type FighterFightResult struct {
 	MyFighter    *Fighter
 	RivalFighter *Fighter
@@ -59,4 +76,9 @@ type User struct {
 
 type UserPreference struct {
 	DefaultFighterID int `json:"defaultFighterID"`
+}
+
+type Matchup struct {
+	RivalFighterID int
+	WinRatio       float64 `json:"winRatio"`
 }
