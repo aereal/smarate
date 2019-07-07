@@ -11,8 +11,6 @@ import (
 	"time"
 
 	"contrib.go.opencensus.io/exporter/stackdriver"
-	"contrib.go.opencensus.io/exporter/stackdriver/propagation"
-	"go.opencensus.io/plugin/ochttp"
 	"go.opencensus.io/trace"
 )
 
@@ -39,26 +37,12 @@ func run() error {
 	defer exporter.Flush()
 	trace.RegisterExporter(exporter)
 
-	w, err := InitializeWeb(ctx)
-	if err != nil {
-		return err
-	}
-	server := &http.Server{
-		Addr: fmt.Sprintf(":%s", port),
-		Handler: &ochttp.Handler{
-			Handler:     w.Handler(),
-			Propagation: &propagation.HTTPFormat{},
-		},
-	}
+	server, err := InitializeServer(ctx, port)
 	go graceful(ctx, server, 5*time.Second)
 
 	log.Printf("starting server")
 	if err := server.ListenAndServe(); err != http.ErrServerClosed {
 		return fmt.Errorf("cannot start server: %s", err)
-	}
-
-	if err := w.Close(); err != nil {
-		return fmt.Errorf("failed to close: %s", err)
 	}
 
 	return nil

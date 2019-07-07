@@ -12,11 +12,12 @@ import (
 	"github.com/aereal/smarate/api/gql/resolvers"
 	"github.com/aereal/smarate/api/repo"
 	"github.com/aereal/smarate/api/web"
+	"net/http"
 )
 
 // Injectors from wire.go:
 
-func InitializeWeb(ctx context.Context) (*web.Web, error) {
+func InitializeServer(ctx context.Context, port string) (*http.Server, error) {
 	app, err := ProvideFirebaseApp(ctx)
 	if err != nil {
 		return nil, err
@@ -30,5 +31,6 @@ func InitializeWeb(ctx context.Context) (*web.Web, error) {
 	executableSchema := gql.ProvideExecutableSchema(resolver)
 	middleware := auth.ProvideMiddleware(app)
 	webWeb := web.ProvideWeb(executableSchema, client, middleware)
-	return webWeb, nil
+	server := ProvideServer(port, webWeb)
+	return server, nil
 }
