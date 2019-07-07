@@ -29,3 +29,5 @@ models:
     model: github.com/aereal/smarate/api/model.User
   UserPreference:
     model: github.com/aereal/smarate/api/model.UserPreference
+  UserFightResult:
+    model: github.com/aereal/smarate/api/model.UserFightResult

@@ -25,12 +25,6 @@ type MatchupConnection struct {
 	Nodes []*Matchup `json:"nodes"`
 }
 
-type UserFightResult struct {
-	MyFighter    *model.Fighter `json:"myFighter"`
-	RivalFighter *model.Fighter `json:"rivalFighter"`
-	Won          bool           `json:"won"`
-}
-
 type UserFightResultConnection struct {
-	Nodes []*UserFightResult `json:"nodes"`
+	Nodes []*model.UserFightResult `json:"nodes"`
 }

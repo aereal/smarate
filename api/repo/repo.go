@@ -148,6 +148,26 @@ func (r *Repo) RecordFightResult(ctx context.Context, user *model.User, myFighte
 	return true, nil
 }
 
+func (r *Repo) FindUserFightResults(ctx context.Context, user *model.User, first int) ([]*model.UserFightResult, error) {
+	iter := r.firestore.Collection("user_results").OrderBy("recordedAt", firestore.Desc).Limit(first).Documents(ctx)
+	results := []*model.UserFightResult{}
+	for {
+		snapshot, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		var result model.UserFightResult
+		if err := snapshot.DataTo(&result); err != nil {
+			return nil, err
+		}
+		results = append(results, &result)
+	}
+	return results, nil
+}
+
 func (r *Repo) FindFighterName(ctx context.Context, fighterID int) (*model.LocalizedName, error) {
 	v, ok := localizedNameByID[fighterID]
 	if !ok {

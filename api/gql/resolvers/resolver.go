@@ -134,5 +134,10 @@ func (r *userResolver) Preference(ctx context.Context, user *model.User) (*model
 
 func (r *userResolver) FightResults(ctx context.Context, user *model.User, first int) (*dto.UserFightResultConnection, error) {
 	conn := &dto.UserFightResultConnection{}
-	return conn, nil // TODO
+	results, err := r.repo.FindUserFightResults(ctx, user, first)
+	if err != nil {
+		return nil, err
+	}
+	conn.Nodes = results
+	return conn, nil
 }

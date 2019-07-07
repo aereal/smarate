@@ -1776,7 +1776,7 @@ func (ec *executionContext) _User_fightResults(ctx context.Context, field graphq
 	return ec.marshalNUserFightResultConnection2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐUserFightResultConnection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _UserFightResult_myFighter(ctx context.Context, field graphql.CollectedField, obj *dto.UserFightResult) (ret graphql.Marshaler) {
+func (ec *executionContext) _UserFightResult_myFighter(ctx context.Context, field graphql.CollectedField, obj *model.UserFightResult) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -1813,7 +1813,7 @@ func (ec *executionContext) _UserFightResult_myFighter(ctx context.Context, fiel
 	return ec.marshalNFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐFighter(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _UserFightResult_rivalFighter(ctx context.Context, field graphql.CollectedField, obj *dto.UserFightResult) (ret graphql.Marshaler) {
+func (ec *executionContext) _UserFightResult_rivalFighter(ctx context.Context, field graphql.CollectedField, obj *model.UserFightResult) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -1850,7 +1850,7 @@ func (ec *executionContext) _UserFightResult_rivalFighter(ctx context.Context, f
 	return ec.marshalNFighter2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐFighter(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _UserFightResult_won(ctx context.Context, field graphql.CollectedField, obj *dto.UserFightResult) (ret graphql.Marshaler) {
+func (ec *executionContext) _UserFightResult_won(ctx context.Context, field graphql.CollectedField, obj *model.UserFightResult) (ret graphql.Marshaler) {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() {
 		if r := recover(); r != nil {
@@ -1918,10 +1918,10 @@ func (ec *executionContext) _UserFightResultConnection_nodes(ctx context.Context
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*dto.UserFightResult)
+	res := resTmp.([]*model.UserFightResult)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNUserFightResult2ᚕᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐUserFightResult(ctx, field.Selections, res)
+	return ec.marshalNUserFightResult2ᚕᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐUserFightResult(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _UserPreference_defaultFighterID(ctx context.Context, field graphql.CollectedField, obj *model.UserPreference) (ret graphql.Marshaler) {
@@ -3581,7 +3581,7 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 
 var userFightResultImplementors = []string{"UserFightResult"}
 
-func (ec *executionContext) _UserFightResult(ctx context.Context, sel ast.SelectionSet, obj *dto.UserFightResult) graphql.Marshaler {
+func (ec *executionContext) _UserFightResult(ctx context.Context, sel ast.SelectionSet, obj *model.UserFightResult) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, userFightResultImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -4194,11 +4194,11 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNUserFightResult2githubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐUserFightResult(ctx context.Context, sel ast.SelectionSet, v dto.UserFightResult) graphql.Marshaler {
+func (ec *executionContext) marshalNUserFightResult2githubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐUserFightResult(ctx context.Context, sel ast.SelectionSet, v model.UserFightResult) graphql.Marshaler {
 	return ec._UserFightResult(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNUserFightResult2ᚕᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐUserFightResult(ctx context.Context, sel ast.SelectionSet, v []*dto.UserFightResult) graphql.Marshaler {
+func (ec *executionContext) marshalNUserFightResult2ᚕᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐUserFightResult(ctx context.Context, sel ast.SelectionSet, v []*model.UserFightResult) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -4222,7 +4222,7 @@ func (ec *executionContext) marshalNUserFightResult2ᚕᚖgithubᚗcomᚋaereal�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNUserFightResult2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐUserFightResult(ctx, sel, v[i])
+			ret[i] = ec.marshalNUserFightResult2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐUserFightResult(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -4235,7 +4235,7 @@ func (ec *executionContext) marshalNUserFightResult2ᚕᚖgithubᚗcomᚋaereal�
 	return ret
 }
 
-func (ec *executionContext) marshalNUserFightResult2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋgqlᚋdtoᚐUserFightResult(ctx context.Context, sel ast.SelectionSet, v *dto.UserFightResult) graphql.Marshaler {
+func (ec *executionContext) marshalNUserFightResult2ᚖgithubᚗcomᚋaerealᚋsmarateᚋapiᚋmodelᚐUserFightResult(ctx context.Context, sel ast.SelectionSet, v *model.UserFightResult) graphql.Marshaler {
 	if v == nil {
 		if !ec.HasError(graphql.GetResolverContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
