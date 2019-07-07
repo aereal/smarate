@@ -10,12 +10,20 @@ import (
 )
 
 func ProvideServer(port string, w *web.Web) *http.Server {
-	handler := &ochttp.Handler{
-		Handler:     w.Handler(),
-		Propagation: &propagation.HTTPFormat{},
+	host := "localhost"
+	var handler http.Handler
+	handler = w.Handler()
+
+	if onGAE {
+		host = ""
+		handler = &ochttp.Handler{
+			Handler:     w.Handler(),
+			Propagation: &propagation.HTTPFormat{},
+		}
 	}
+
 	server := &http.Server{
-		Addr:    fmt.Sprintf(":%s", port),
+		Addr:    fmt.Sprintf("%s:%s", host, port),
 		Handler: handler,
 	}
 	return server

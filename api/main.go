@@ -14,6 +14,14 @@ import (
 	"go.opencensus.io/trace"
 )
 
+var (
+	onGAE bool
+)
+
+func init() {
+	onGAE = os.Getenv("GAE_ENV") != ""
+}
+
 func main() {
 	if err := run(); err != nil {
 		fmt.Fprintf(os.Stderr, "%+v\n", err)
@@ -30,14 +38,19 @@ func run() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	exporter, err := stackdriver.NewExporter(stackdriver.Options{Context: ctx})
+	if onGAE {
+		exporter, err := stackdriver.NewExporter(stackdriver.Options{Context: ctx})
+		if err != nil {
+			return err
+		}
+		defer exporter.Flush()
+		trace.RegisterExporter(exporter)
+	}
+
+	server, err := InitializeServer(ctx, port)
 	if err != nil {
 		return err
 	}
-	defer exporter.Flush()
-	trace.RegisterExporter(exporter)
-
-	server, err := InitializeServer(ctx, port)
 	go graceful(ctx, server, 5*time.Second)
 
 	log.Printf("starting server")
