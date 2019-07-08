@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.41.0
 	contrib.go.opencensus.io/exporter/stackdriver v0.12.2
 	firebase.google.com/go v3.8.1+incompatible
-	github.com/99designs/gqlgen v0.9.1
+	github.com/99designs/gqlgen v0.9.2-0.20190708060510-d2c5bf2ae2d8
 	github.com/99designs/gqlgen-contrib v0.0.0-20190222015228-c654377d611c
 	github.com/dimfeld/httptreemux v5.0.1+incompatible
 	github.com/google/wire v0.3.0

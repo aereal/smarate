@@ -8,8 +8,8 @@ contrib.go.opencensus.io/exporter/stackdriver v0.12.2/go.mod h1:iwB6wGarfphGGe/e
 contrib.go.opencensus.io/resource v0.1.1/go.mod h1:F361eGI91LCmW1I/Saf+rX0+OFcigGlFvXwEGEnkRLA=
 firebase.google.com/go v3.8.1+incompatible h1:A/KMJdcsLq1/miil8tONEbLBmUgOWpdVCLAxMHq0Xbw=
 firebase.google.com/go v3.8.1+incompatible/go.mod h1:xlah6XbEyW6tbfSklcfe5FHJIwjt8toICdV5Wh9ptHs=
-github.com/99designs/gqlgen v0.9.1 h1:YqEOgwamerz8mNGwqL5fX/SJS3+TdQ8zE02jhHIwjx0=
-github.com/99designs/gqlgen v0.9.1/go.mod h1:HrrG7ic9EgLPsULxsZh/Ti+p0HNWgR3XRuvnD0pb5KY=
+github.com/99designs/gqlgen v0.9.2-0.20190708060510-d2c5bf2ae2d8 h1:M8JM7Q0Jjg5OHi04tOnQv72po7YDo7f+MjvY2/fUZvU=
+github.com/99designs/gqlgen v0.9.2-0.20190708060510-d2c5bf2ae2d8/go.mod h1:HrrG7ic9EgLPsULxsZh/Ti+p0HNWgR3XRuvnD0pb5KY=
 github.com/99designs/gqlgen-contrib v0.0.0-20190222015228-c654377d611c h1:6PhFf4boI9ICEsb57Y8GNs+Yhk/y8x8sRvLcc1QTpYc=
 github.com/99designs/gqlgen-contrib v0.0.0-20190222015228-c654377d611c/go.mod h1:YBpBdxshfUEBRQzGDvYsWGKUnbnh+aYyOKwtzJajAq4=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
