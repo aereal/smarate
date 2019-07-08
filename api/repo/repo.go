@@ -90,7 +90,7 @@ func (r *Repo) FindUserFromToken(ctx context.Context, token *auth.Token) (*model
 }
 
 func (r *Repo) FindUserPreference(ctx context.Context, userID string) (*model.UserPreference, error) {
-	snapshot, err := r.firestore.Collection("user_preferences").Doc(userID).Get(ctx)
+	snapshot, err := r.firestore.Collection("users").Doc(userID).Get(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +102,7 @@ func (r *Repo) FindUserPreference(ctx context.Context, userID string) (*model.Us
 }
 
 func (r *Repo) UpdateUserPreference(ctx context.Context, user *model.User, pref *model.UserPreference) error {
-	ref := r.firestore.Collection("user_preferences").Doc(user.ID)
+	ref := r.firestore.Collection("users").Doc(user.ID)
 	update := firestore.Update{Path: "defaultFighterID", Value: nil}
 	if pref != nil {
 		update.Value = pref.DefaultFighterID
