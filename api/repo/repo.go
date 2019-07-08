@@ -133,7 +133,8 @@ func (r *Repo) RecordFightResult(ctx context.Context, user *model.User, myFighte
 	}
 	batch.Set(globalResultRef, globalResult)
 
-	userResultRef := r.firestore.Collection("user_results").NewDoc()
+	userRef := r.firestore.Collection("users").Doc(user.ID)
+	userResultRef := userRef.Collection("fight_results").NewDoc()
 	batch.Set(userResultRef, &model.UserFightResult{
 		RecordedAt:   recordedAt,
 		MyFighter:    myFighter,
@@ -149,7 +150,7 @@ func (r *Repo) RecordFightResult(ctx context.Context, user *model.User, myFighte
 }
 
 func (r *Repo) FindUserFightResults(ctx context.Context, user *model.User, first int) ([]*model.UserFightResult, error) {
-	iter := r.firestore.Collection("user_results").OrderBy("recordedAt", firestore.Desc).Limit(first).Documents(ctx)
+	iter := r.firestore.Collection("users").Doc(user.ID).Collection("fight_results").OrderBy("recordedAt", firestore.Desc).Limit(first).Documents(ctx)
 	results := []*model.UserFightResult{}
 	for {
 		snapshot, err := iter.Next()
