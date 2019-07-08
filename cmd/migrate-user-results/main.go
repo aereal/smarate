@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	firebase "firebase.google.com/go"
 	"github.com/aereal/smarate/api/model"
@@ -37,9 +38,16 @@ func run(ctx context.Context) error {
 	if len(users) > 1 {
 		return fmt.Errorf("unexpectedly user snapshot exists more than 1")
 	}
-	migratedUserID := users[0].Ref.ID
+	migratedUser := users[0]
 
-	log.Printf("migrated to user.ID=%q", migratedUserID)
+	log.Printf("migrated to user.ID=%q", migratedUser.Ref.ID)
+
+	newUserRef := firestore.Collection("users").Doc(migratedUser.Ref.ID)
+	if _, err := newUserRef.Set(ctx, migratedUser.Data()); err != nil {
+		return fmt.Errorf("failed to migrate user_preferences -> users: %s", err)
+	}
+
+	time.Sleep(300 * time.Millisecond)
 
 	iter := firestore.Collection("user_results").Documents(ctx)
 	defer iter.Stop()
@@ -59,7 +67,7 @@ func run(ctx context.Context) error {
 			return err
 		}
 
-		fightResult := firestore.Collection("users").Doc(migratedUserID).Collection("fight_results").NewDoc()
+		fightResult := newUserRef.Collection("fight_results").NewDoc()
 		writeBatch.Create(fightResult, &before)
 	}
 

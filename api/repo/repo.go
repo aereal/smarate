@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -150,7 +151,27 @@ func (r *Repo) RecordFightResult(ctx context.Context, user *model.User, myFighte
 }
 
 func (r *Repo) FindUserFightResults(ctx context.Context, user *model.User, first int) ([]*model.UserFightResult, error) {
-	iter := r.firestore.Collection("users").Doc(user.ID).Collection("fight_results").OrderBy("recordedAt", firestore.Desc).Limit(first).Documents(ctx)
+	userRef := r.firestore.Collection("users").Doc(user.ID)
+	userDoc, err := userRef.Get(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch user: %s", err)
+	}
+	log.Printf("user.ID=%q user.Path=%q user.exists = %v", userRef.ID, userRef.Path, userDoc.Exists())
+
+	colls, err := userRef.Collections(ctx).GetAll()
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch sub-collections: %s", err)
+	}
+	log.Printf("fetched sub-collections:")
+	for i, coll := range colls {
+		log.Printf("[%d] ID=%q Path=%q", i, coll.ID, coll.Path)
+	}
+	log.Printf("DONE fetched sub-collections")
+
+	query := r.firestore.CollectionGroup("fight_results").Limit(first)
+	// query := userRef.Collection("fight_results").Limit(first)
+	iter := query.Documents(ctx)
+	log.Printf("start user.fight_results iterator")
 	results := []*model.UserFightResult{}
 	for {
 		snapshot, err := iter.Next()
@@ -160,12 +181,14 @@ func (r *Repo) FindUserFightResults(ctx context.Context, user *model.User, first
 		if err != nil {
 			return nil, err
 		}
+		log.Printf("found fight result snapshot: exists=%v", snapshot.Exists())
 		var result model.UserFightResult
 		if err := snapshot.DataTo(&result); err != nil {
 			return nil, err
 		}
 		results = append(results, &result)
 	}
+	log.Printf("DONE user.fight_results iterator")
 	return results, nil
 }
 
