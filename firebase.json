@@ -27,12 +27,6 @@
       "yarn workspace web build"
     ]
   },
-  "functions": {
-    "source": "packages/functions",
-    "predeploy": [
-      "yarn workspace functions build"
-    ]
-  },
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
